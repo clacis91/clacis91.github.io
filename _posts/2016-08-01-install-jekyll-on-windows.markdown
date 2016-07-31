@@ -6,7 +6,7 @@ categories: [jekyll]
 
 # Youtube
 
-{% youtube T_ZhqkshtKk %}
+{% include youtube.html id="T_ZhqkshtKk" %}
 
 # 공식페이지
 
