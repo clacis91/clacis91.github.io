@@ -1,17 +1,25 @@
-# Jekyll Modern Blog
+## My Stack Problems
 
-A Simple, Clean and responsive modern blog for jekyll.
+> This project forked and has been modified from [A simple grey theme for Jekyll](https://github.com/liamsymonds/simplygrey-jekyll), and the search posts using [Super Search](https://github.com/chinchang/super-search)
 
-## [Live Demo](http://inded.github.io/Jekyll_modern-blog/)
+### Demo
+* [https://agusmakmun.github.io](https://agusmakmun.github.io)
 
-## Attributions
-Based off of this [article from Codrops](http://tympanus.net/codrops/?p=24222)
-Using Sample images from [Fancy Crave](http://fancycrave.com/)
+#### Feature
 
-## License
+* Sitemap and XML Feed
+* Paginations in homepage
+* Posts under category
+* Realtime Search Posts _(title & description)_ under query.
+* Related Posts
+* Highlight pre
+* Next & Previous Post
+* Disqus comment
+* Projects
+* Project page
+* Share on social media
+* Google analytics
 
-Based off of this [Article on Codrops](http://tympanus.net/codrops/?p=24222)
+#### Screenshot
 
-Created by Claudio Calautti for Codrops. Released under the [GNU GPL license v3](https://www.gnu.org/licenses/gpl-3.0.html).
-
-Changes being that I made it jekyll ready and smushed the CSS together.
+![Screenshot Post Page](https://raw.githubusercontent.com/agusmakmun/agusmakmun.github.io/master/static/img/screenshot-post-page.png  "Screenshot Post Page")
