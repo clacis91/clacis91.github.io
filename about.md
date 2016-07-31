@@ -4,6 +4,9 @@ title: About
 permalink: /about/
 ---
 
-I am freelance developer. Currently doing more in backend, actually in Python and Django.
+안녕
 
-email: agus[at]python.web.id
+email: 
+: clacis91@gmail.com
+: clacis@naver.com
+: apeiron@ajou.ac.kr

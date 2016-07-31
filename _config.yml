@@ -2,7 +2,7 @@ title: BLOG TESTING
 description: HELLO WORLD
 author: WJ
 github: https://github.com/clacis91
-about: hangul
+about: 한글테스트
 disqus_shortname: blogtesting
 google_analytics: UA-XXXXXXXX-Y
 
@@ -43,6 +43,7 @@ baseurl: ""
 paginate: 20
 per_page: 20
 paginate_path: "/page:num/"
+encoding: utf-8
 markdown: kramdown
 gems:
   - jekyll-paginate
