@@ -1,9 +1,9 @@
-title: Stack Problems
-description: My Personal Stack Problems
-author: Agus Makmun
-github: https://github.com/agusmakmun
-about: I am freelance developer. Currently doing more in backend, actually in Python and Django.
-disqus_shortname: stackproblems
+title: BLOG TESTING
+description: HELLO WORLD
+author: WJ
+github: https://github.com/clacis91
+about: hangul
+disqus_shortname: blogtesting
 google_analytics: UA-XXXXXXXX-Y
 
 enableTags: true
@@ -20,27 +20,25 @@ social:
     - icon: fa-skype
       link: "#"
     - icon: fa-twitter
-      link: "https://twitter.com/agusmakmun6"
+      link: "#"
     - icon: fa-linkedin
       link: "#"
     - icon: fa-stack-exchange
       link: "#"
 
 share:
-  twitter_username: agusmakmun6
-  fb_appid: 1749788565247320
 
 urls:
     - text: About Me
       url: /about/
-    - text: Projects
-      url: /projects/
+#    - text: Projects
+#      url: /projects/
     - text: Github
-      url: https://github.com/agusmakmun
-    - text: XML Feed
-      url: /feed.xml
+      url: https://github.com/clacis91
+#    - text: XML Feed
+#      url: /feed.xml
 
-url: "https://agusmakmun.github.io"
+url: "https://clacis91.github.io"
 baseurl: ""
 paginate: 20
 per_page: 20
