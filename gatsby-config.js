@@ -1,11 +1,11 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Starter Blog`,
-    author: `Kyle Mathews`,
+    title: `기록`,
+    author: `WJNAM`,
     description: `A starter blog demonstrating what Gatsby can do.`,
     siteUrl: `https://clacis91.github.io/`,
     social: {
-      twitter: `kylemathews`,
+      twitter: ``,
     },
   },
   plugins: [
