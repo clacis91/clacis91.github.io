@@ -14,6 +14,3 @@ https://jojoldu.tistory.com/250?category=635883
 > + Gradle -> Maven
 > + Travis-CI -> Jenkins
 > + MariaDB -> PostgreSQL
-
-
-***
