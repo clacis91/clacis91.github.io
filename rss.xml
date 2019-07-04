@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Thu, 04 Jul 2019 04:18:40 GMT</lastBuildDate><item><title><![CDATA[Eclipse에서 tomcat server 설정 (Mac)]]></title><description><![CDATA[Eclipse(STS)에서 tomcat server 설정 시 Unknown version of Tomcat was specified 에러 발생 https://stackoverflow.com/a/34278481osx에서 brew로 tomcat…]]></description><link>https://clacis91.github.io//tomcat-osx-eclipse/</link><guid isPermaLink="false">https://clacis91.github.io//tomcat-osx-eclipse/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Eclipse(STS)에서 tomcat server 설정 시 &lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Thu, 04 Jul 2019 04:41:21 GMT</lastBuildDate><item><title><![CDATA[Eclipse에서 tomcat server 설정 (Mac)]]></title><description><![CDATA[Eclipse(STS)에서 tomcat server 설정 시 Unknown version of Tomcat was specified 에러 발생 https://stackoverflow.com/a/34278481osx에서 brew로 tomcat…]]></description><link>https://clacis91.github.io//tomcat-osx-eclipse/</link><guid isPermaLink="false">https://clacis91.github.io//tomcat-osx-eclipse/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Eclipse(STS)에서 tomcat server 설정 시 &lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Unknown version of Tomcat was specified&lt;/b&gt; 에러 발생 &lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/a/34278481&quot;&gt;https://stackoverflow.com/a/34278481&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
@@ -8,7 +8,9 @@
 &lt;li&gt;/usr/local/Cellar/tomcat/{version}/libexec&lt;/li&gt;
 &lt;/ul&gt;</content:encoded></item><item><title><![CDATA[Spring Boot로 웹서비스 개발 - 1]]></title><description><![CDATA[https://jojoldu.tistory.com/250?category=635883따라하는 중개발환경은 내맘대로IntelliJ -> STS4Spring Boot 1.x -> Spring Boot 2.xGradle -> MavenTravis-CI…]]></description><link>https://clacis91.github.io//springdemo-1/</link><guid isPermaLink="false">https://clacis91.github.io//springdemo-1/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;https://jojoldu.tistory.com/250?category=635883&quot;&gt;https://jojoldu.tistory.com/250?category=635883&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;따라하는 중&lt;/p&gt;
+&lt;blockquote&gt;
 &lt;p&gt;개발환경은 내맘대로&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;IntelliJ -&gt; STS4&lt;/li&gt;
@@ -17,4 +19,10 @@
 &lt;li&gt;Travis-CI -&gt; Jenkins&lt;/li&gt;
 &lt;li&gt;MariaDB -&gt; PostgreSQL&lt;/li&gt;
 &lt;/ul&gt;
-&lt;/blockquote&gt;</content:encoded></item></channel></rss>
+&lt;/blockquote&gt;
+&lt;hr&gt;</content:encoded></item><item><title><![CDATA[Gatsby - Github Page 만들기]]></title><description><![CDATA[gatsby
+https://github.com/gatsbyjs/gatsby-starter-blognetlify 없이 github page deploy
+http://jarednielsen.com/deploy-gatsbyjs-github-pages…]]></description><link>https://clacis91.github.io//gatsby-setting/</link><guid isPermaLink="false">https://clacis91.github.io//gatsby-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;gatsby
+&lt;a href=&quot;https://github.com/gatsbyjs/gatsby-starter-blog&quot;&gt;https://github.com/gatsbyjs/gatsby-starter-blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;netlify 없이 github page deploy
+&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&lt;/a&gt;&lt;/p&gt;</content:encoded></item></channel></rss>
