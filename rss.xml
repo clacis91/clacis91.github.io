@@ -1,9 +1,50 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Thu, 04 Jul 2019 08:04:24 GMT</lastBuildDate><item><title><![CDATA[Gatsby - Github Page 만들기]]></title><description><![CDATA[gatsby
-https://github.com/gatsbyjs/gatsby-starter-blognetlify 없이 github page deploy
-http://jarednielsen.com/deploy-gatsbyjs-github-pages…]]></description><link>https://clacis91.github.io//gatsby-setting/</link><guid isPermaLink="false">https://clacis91.github.io//gatsby-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;gatsby
-&lt;a href=&quot;https://github.com/gatsbyjs/gatsby-starter-blog&quot;&gt;https://github.com/gatsbyjs/gatsby-starter-blog&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;netlify 없이 github page deploy
-&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Lombok annotations]]></title><description><![CDATA[lombok
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Mon, 22 Jul 2019 02:43:50 GMT</lastBuildDate><item><title><![CDATA[Java Study (1)]]></title><description><![CDATA[시작Reference Book : 자바를 다루는 기술 (2014), 김병부, 길벗Fundamental안다고 생각하지만 모르고 있는 것들JVMWrite once, run everywhere기존의 언어의 경우 OS에 맞는 Libray / API…]]></description><link>https://clacis91.github.io//java-study-1/</link><guid isPermaLink="false">https://clacis91.github.io//java-study-1/</guid><pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;시작&lt;/h1&gt;
+&lt;p&gt;Reference Book : &lt;a href=&quot;https://www.gilbut.co.kr/book/view?bookcode=BN000854&quot;&gt;자바를 다루는 기술 (2014)&lt;/a&gt;, 김병부, 길벗&lt;/p&gt;
+&lt;h2&gt;Fundamental&lt;/h2&gt;
+&lt;p&gt;안다고 생각하지만 모르고 있는 것들&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3&gt;JVM&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Write once, run everywhere&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;기존의 언어의 경우 OS에 맞는 Libray / API 등을 가져와 쓰거나 그 특성에 맞게 개발해야하는 불편함이 존재했다. &lt;/p&gt;
+&lt;p&gt;JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application은 JVM 위에서 동작하도록 설계되어 있다. 각각에 맞는 JVM이 개발되어 있으니 개발자가 OS 환경까지 신경쓰지 말자는 것.&lt;/p&gt;
+&lt;h4&gt;JVM의 구조&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;클래스 파일&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;클래스 로더 서브 시스템&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;실행 데이터 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;메소드 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;스택 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;힙 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;레지스터 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;네이티브 메소드 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Young Generation 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Old 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Permanent 영역&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[Lombok annotations]]></title><description><![CDATA[lombok
 http://wonwoo.ml/index.php/post/1607
 https://www.daleseo.com/lombok-popular-annotations/
 http://kwonnam.pe.kr/wiki/java/lomboklombok…]]></description><link>https://clacis91.github.io//lombok-setting/</link><guid isPermaLink="false">https://clacis91.github.io//lombok-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;lombok
@@ -47,4 +88,16 @@ http://kwonnam.pe.kr/wiki/java/lomboklombok…]]></description><link>https://cla
 &lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;/usr/local/Cellar/tomcat/{version}/libexec&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item></channel></rss>
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[Gatsby - Github Page 만들기]]></title><description><![CDATA[gatsbyhttps://github.com/gatsbyjs/gatsby-starter-blognetlify 없이 github page deployhttp://jarednielsen.com/deploy-gatsbyjs-github-pages-user…]]></description><link>https://clacis91.github.io//gatsby-setting/</link><guid isPermaLink="false">https://clacis91.github.io//gatsby-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;ul&gt;
+&lt;li&gt;gatsby&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/gatsbyjs/gatsby-starter-blog&quot;&gt;https://github.com/gatsbyjs/gatsby-starter-blog&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;netlify 없이 github page deploy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&quot;&gt;http://jarednielsen.com/deploy-gatsbyjs-github-pages-user/&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;font 설정&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;http://kyleamathews.github.io/typography.js/&quot;&gt;http://kyleamathews.github.io/typography.js/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;typography.js 파일에서 설정 변경&lt;/p&gt;</content:encoded></item></channel></rss>
