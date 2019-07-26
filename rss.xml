@@ -1,16 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Wed, 24 Jul 2019 15:47:18 GMT</lastBuildDate><item><title><![CDATA[Java Study (2)]]></title><description><![CDATA[Reference Book : 자바를 다루는 기술 (2014), 김병부, 길벗Object OrientedTBWCollectionTBWExceptionTBWGeneric클래스 내부에서 사용할 타입을 외부에서 지정하는 기법ArrayList<String…]]></description><link>https://clacis91.github.io//java-study-2/</link><guid isPermaLink="false">https://clacis91.github.io//java-study-2/</guid><pubDate>Wed, 24 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Reference Book : &lt;a href=&quot;https://www.gilbut.co.kr/book/view?bookcode=BN000854&quot;&gt;자바를 다루는 기술 (2014)&lt;/a&gt;, 김병부, 길벗&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[기록]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://clacis91.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 26 Jul 2019 06:21:18 GMT</lastBuildDate><item><title><![CDATA[Java Study (2)]]></title><description><![CDATA[Reference Book : 자바를 다루는 기술 (2014), 김병부, 길벗 Static static으로 선언된 리소스들은 JVM 메모리 안에 딱 하나만 생성된다. 또한 static 리소스들은 JVM 상에서 조금 다른 방법으로 동작한다. static…]]></description><link>https://clacis91.github.io//java-study-2/</link><guid isPermaLink="false">https://clacis91.github.io//java-study-2/</guid><pubDate>Wed, 24 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Reference Book : &lt;a href=&quot;https://www.gilbut.co.kr/book/view?bookcode=BN000854&quot;&gt;자바를 다루는 기술 (2014)&lt;/a&gt;, 김병부, 길벗&lt;/p&gt;
 &lt;hr&gt;
-&lt;h2&gt;Object Oriented&lt;/h2&gt;
-&lt;p&gt;TBW&lt;/p&gt;
+&lt;h2&gt;Static&lt;/h2&gt;
+&lt;p&gt;static으로 선언된 리소스들은 JVM 메모리 안에 &lt;em&gt;딱 하나만&lt;/em&gt; 생성된다. 또한 static 리소스들은 JVM 상에서 조금 다른 방법으로 동작한다. static 으로 선언된 리소스들은 인스턴스화 과정 없이 실행 가능한 형태로 메모리에 바로 생성되고, 모든 객체들이 공유할 수 있다. static은 클래스 로딩 시에 생성되고, JVM이 종료되면서 메모리에서도 없어진다. &lt;/p&gt;
+&lt;h2&gt;Abstract Class / Interface&lt;/h2&gt;
+&lt;p&gt;(* 내 생각)&lt;/p&gt;
+&lt;p&gt;어차피 추상 메소드 정의 후 자식 클래스에서의 구현을 강제하는 것은 똑같다.&lt;br&gt;
+일부 구현체를 허용하냐(Abstract class) 허용하지 않느냐(Interface)의 차이, 그리고 다중 상속 개념을 포함하는지의 차이이다. &lt;/p&gt;
+&lt;p&gt;여러 자료를 찾아봐도 abstract class의 장점이 막 와닿지는 않는다. 그냥 class를 상속하고 자식별로 구현이 필요한 기능이 있다면 interface로 정의해서 붙여버리면 되지 않나? 이쪽이 interface를 붙였다 뗐다 하는 확장성에서도 유리할거고. 코드나 파일의 파편화를 줄일 수 있다는 장점 말고는 떠오르지 않는다.&lt;/p&gt;
+&lt;p&gt;경험으로 느끼는 수밖에 없을거같다..&lt;/p&gt;
 &lt;h2&gt;Collection&lt;/h2&gt;
 &lt;p&gt;TBW&lt;/p&gt;
 &lt;h2&gt;Exception&lt;/h2&gt;
 &lt;p&gt;TBW&lt;/p&gt;
+&lt;hr&gt;
 &lt;h2&gt;Generic&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;클래스 내부에서 사용할 타입을 외부에서 지정하는 기법&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;ArrayList&amp;#x3C;&lt;b&gt;String&lt;/b&gt;&gt; strList = new ArrayList&amp;#x3C;&lt;b&gt;String&lt;/b&gt;&gt;();
+&lt;p&gt;ArrayList&amp;#x3C;&lt;b&gt;String&lt;/b&gt;&gt; strList = new ArrayList&amp;#x3C;&lt;b&gt;String&lt;/b&gt;&gt;();&lt;br&gt;
 ArrayList&amp;#x3C;&lt;b&gt;Integer&lt;/b&gt;&gt; intList = new ArrayList&amp;#x3C;&lt;b&gt;Integer&lt;/b&gt;&gt;();&lt;/p&gt;
 &lt;p&gt;이런식으로 ArrayList &lt;em&gt;내부에서 쓰일 타입을 외부에서 지정&lt;/em&gt;해주는 개념&lt;br&gt;
 &lt;b&gt;제네릭이 없었다면?&lt;/b&gt; - StringArrayList, IntegerArrayList와 같이 타입마다 구현이 필요했을 것이다.&lt;/p&gt;
@@ -31,14 +38,10 @@ Class Hashtable&amp;#x3C;&lt;b&gt;K&lt;/b&gt;, &lt;b&gt;V&lt;/b&gt;&gt;&lt;/p&gt
 &lt;b&gt;?&lt;/b&gt; - ?는 모든 클래스를 의미한다. 단, 클래스 선언부에는 사용할 수 없고, 뒤에 언급할 &lt;b&gt;확장 문법&lt;/b&gt;에서만 사용할 수 있다.&lt;/p&gt;
 &lt;h4&gt;주의사항&lt;/h4&gt;
 &lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;와일드카드 중복 사용은 불가&lt;br&gt;
+&lt;li&gt;와일드카드 중복 사용은 불가&lt;br&gt;
 public class ValueMapper&amp;#x3C;T, T&gt; 같이  와일드 카드를 중복해서 사용하는 것은 JVM이 매개변수 T를 구분하지 못하기 때문에 불가능.&lt;br&gt;
-public class ValueMapper&amp;#x3C;K, V&gt; 같이 사용해야함.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;클래스 선언부에서 사용한 문자만 클래스 내부에서 사용 가능&lt;/p&gt;
-&lt;/li&gt;
+public class ValueMapper&amp;#x3C;K, V&gt; 같이 사용해야함.&lt;/li&gt;
+&lt;li&gt;클래스 선언부에서 사용한 문자만 클래스 내부에서 사용 가능&lt;/li&gt;
 &lt;/ol&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ValueMapper&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; t&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
@@ -68,8 +71,211 @@ iMapper&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;1번 구문의 경우 java.lang.Number 를 상속받는 클래스만 제네릭으로 사용가능하다.&lt;/p&gt;
 &lt;p&gt;2번 구문은 Comparable 인터페이스가 구현된 클래스만 제네릭으로 사용가능하다.&lt;/p&gt;
 &lt;p&gt;3번 구문은 &amp;#x3C;? extends &lt;b&gt;T&lt;/b&gt;&gt;와 같이 제한할 타입 또한 와일드카드 문자를 사용할 수 있다는 것을 보여주는 에제이다. 말하자면 T가 뭔지는 모르겠지만 T 를 상속받는 클래스를 사용하겠다는 뜻.&lt;/p&gt;
+&lt;hr&gt;
 &lt;h2&gt;Threading&lt;/h2&gt;
-&lt;p&gt;TBW&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Java Study (1)]]></title><description><![CDATA[시작Reference Book : 자바를 다루는 기술 (2014), 김병부, 길벗Fundamental안다고 생각하지만 모르고 있는 것들JVMWrite once, run everywhere기존의 언어의 경우 OS에 맞는 Libray / API…]]></description><link>https://clacis91.github.io//java-study-1/</link><guid isPermaLink="false">https://clacis91.github.io//java-study-1/</guid><pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;시작&lt;/h1&gt;
+&lt;h3&gt;Thread? Runnable? start()? run()?&lt;/h3&gt;
+&lt;p&gt;&lt;b&gt;&lt;em&gt;Thread&lt;/em&gt;&lt;/b&gt; 클래스를 상속하거나, &lt;b&gt;&lt;em&gt;Runnable&lt;/em&gt;&lt;/b&gt; 인터페이스를 구현한 클래스를 만든다.&lt;br&gt;
+쓰레드의 동작이 정의된 &lt;b&gt;.run()&lt;/b&gt; 메소드를 override 해서 구현해야한다.&lt;br&gt;
+Thread를 상속한 경우에는 .run() 메소드를 실행하면 되지만, Runnable을 사용한 경우 그 자체로는 실행할 수 없고, 그 Runnable을 매개변수로 하는 새로운 Thread 객체를 생성해서 사용해야 한다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Runnable&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Thread 클래스 자체도 위의 코드처럼 Runnable 인터페이스를 구현하고는 있다. (매개변수로 들어온 Runnable 객체의 .run() 메소드를 실행시키는 내용이다.)&lt;/p&gt;
+&lt;p&gt;.run() 메소드는 그냥 단순한 메소드일 뿐이라 그냥 실행한다고 새로운 쓰레드에서 실행되지는 않는다. &lt;b&gt;&lt;em&gt;.start()&lt;/em&gt;&lt;/b&gt;로 실행해야 별도의 쓰레드에서 동작한다.&lt;/p&gt;
+&lt;h3&gt;Thread State Machine&lt;/h3&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a42874706c24c80fa8f8fdecc47367c3/af110/image1.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 122.70861833105336%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAZCAYAAAAxFw7TAAAACXBIWXMAAAsSAAALEgHS3X78AAAEJElEQVQ4y51VbWxTVRi+hQpONsaoa7valXVjWM30j6AxkmAQ13Vzw/ZubK5RgsEfMEYMS4ZGHRLqUNEf/iAL/pLwEYS5ONRkklRE3WCLc5rBJI7VsY+uvbf3s+29/dh6fM9NW7vBlPEmT95z7nvOc857znPeS5RX71hGgIF/EXAY8ECyT9yX7W1uUQhsL79yHIAaXntDh/vOnbtV2I8P9xP3a9n5RU+UZn4Y/rF76Sye4QHtrEiX9ff1bu7s/KoaoVnL9Oj1x65fuajG8VuDPy2NUKC9hxAYz9AxLkChSDiE5KBA3xq8YsBxn2dEZbPZiEwoR7SgnTZJYI9iQkzG0T5ozaHZeCw6NtRrxPELZ08tS05eSKxKfZtHSk2MVoV55mRI4DpEjvk8Loc6eMr78Ujfpdx7zXLeDhfYmsxOZWWlrry83ATIt1qtBvBrAHqApqKiwlhps5kBK/BY97edxMg1N0EEpjwNcpBzh0XhO4amLs/FIt0i4z+F+NvKDp2NjQV2u73E4XCsA19cV1enBW9ykGTZvjdb0lnAWakABBGVgh/iM6RnphEf8KOoFEIRWUJkTdVLMC5Xo1lr0ul0pXl5eWaDwWDRaDQlWq22BGLFAA1AC3gonZbI+A7GIhISeY4SeZaRQqIgBYWx48dc6yGsWl9sXgkeSwg/APXGjU/hPjExemMvS/uvMrTfDf5yPCp9H2Sp08QXbbtX3jh9aJXr7QOPtDQ3PRq7djLry/Z9OYsdMiSjPNW4HD6BM/NP3U6qA6FEYk4mRgd/LpToyWcH+6/auru6XkVhdtPkzaFNqYmLmSwE3k3MxmnQrYdjaG9UlmbkkPgrERaYI5hd4BgE6SorReVw8FNX2+Mwb9XqnGx889mA1YCclN++7bmCwy17iu22bU9v3fzMVoTY3B/OdWgISWQ/wCSUdxIJDI3icJ6wWuQT13tlMDFrQ2mp0WKxbDCCmc3mokIwk8lUqNMbipIyw4v9m43v75vPS3zgo5DAHuEDVHtcDr7P+adaEQorN/fWwdYHSZI0gmyKsHxqa2sLoG0EOeUP9fcuT/Fc6jqjmvlzQJV5LLiTn/lhB2lXBqjVagKErQNgUa8Fr02N0ev180iwsHdJIvd7SOB7QQJDcP2/wPV/89eA+2Ec7/n6vOpuTwteyiLFQeQUYbOUDwqEH0HqKMhzccHrUYoDNzN+R7VZtNJg46npAyBkGQrDhMAGvFAkfCGeGR7/o0+p3L6xEdWS6uGJVqda6Dm2wvVOq2Z/U5MJNrv8bPv+rM9e36LEz7TtTI9NJBJpn9lOCl5B2rZUOJ58oaq2MXOx80eb79hAimAhWdrqnbuUq7fW1O8BXKgmnUoJqyEblVR/6zm3tB2mfpfg8wDrlBusarjrb/SeU86cbK2u/89/8v+l/A+33Hj6fblfogAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;image1&quot;
+        title=&quot;image1&quot;
+        src=&quot;/static/a42874706c24c80fa8f8fdecc47367c3/b9e4f/image1.png&quot;
+        srcset=&quot;/static/a42874706c24c80fa8f8fdecc47367c3/cf440/image1.png 148w,
+/static/a42874706c24c80fa8f8fdecc47367c3/d2d38/image1.png 295w,
+/static/a42874706c24c80fa8f8fdecc47367c3/b9e4f/image1.png 590w,
+/static/a42874706c24c80fa8f8fdecc47367c3/af110/image1.png 731w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Create&lt;/b&gt; - Thread 객체가 생성되고 아직 .start()가 호출되지 않은 상태&lt;br&gt;
+&lt;b&gt;Runnable&lt;/b&gt; - .start()가 호출되어 스레드 풀에 들어가고 스케쥴러에 의해 실행 되기를 기다리는 상태&lt;br&gt;
+&lt;b&gt;Running&lt;/b&gt; - 실행될 차례가 되어 실제로 .run() 메소드가 실행된 상태&lt;br&gt;
+&lt;b&gt;Waiting, Blocked&lt;/b&gt; - .run() 메소드가 아직 완료되지 않아서 쓰레드는 유지되지만 동작하고는 있지 않은 상태. .notify() 메소드에 의해 다시 Runnable 상태로 변경된다.&lt;br&gt;
+&lt;b&gt;Done&lt;/b&gt; - .run() 메소드가 완료되어 쓰레드가 종료&lt;/p&gt;
+&lt;h3&gt;Concurrency&lt;/h3&gt;
+&lt;p&gt;쓰레드 사용시 가장 큰 이슈는 역시 리소스 공유 과정에서의 데이터 동기화 문제일 것이다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ConcurrentSample&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;int&lt;/span&gt; res &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; args&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;ConcurrentSample&lt;/span&gt; concurrentSample &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ConcurrentSample&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; th1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;concurrentSample&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; th2 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;concurrentSample&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+        th1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        th2&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;token keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            th1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            th2&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;catch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;InterruptedException&lt;/span&gt; e&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;token class-name&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;out&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;concurrentSample&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;res&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token annotation punctuation&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token function&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;int&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; 
+            res&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; 
+&lt;span class=&quot;token class-name&quot;&gt;Result&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12594&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;실행할때마다 결과 다름&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;위의 예제 코드는 res에 10000을 더해주는 프로세스가 2번 실행되니, 만약 데이터 동기화가 유지되면서 수행된다면 예상되는 결과값은 20000일 것이다. 하지만 실제로는 두 쓰레드가 동시에 res에 접근하기 때문에 Concurrency가 유지되지 않아 실행할 때마다 20000 보다는 작은 랜덤한 결과가 얻어지게 된다.&lt;/p&gt;
+&lt;p&gt;이러한 데이터 동기화 문제를 해결하기 위한 Critical section 개념이 역시 자바에도 있다. &lt;b&gt;&lt;em&gt;synchronized&lt;/em&gt;&lt;/b&gt; 구문으로 사용할 수 있다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 메소드 전체를 Synchronized로 지정&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;reportCurrentStats&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 메소드 일부를 Synchronized로 지정&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;reportCurrentStats&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 동기화 블록 방식을 사용시 동기화 객체를 지정해줘야한다.&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;synchronized 구문을 적용해서 위 예제의 문제를 해결할 수 있다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;int&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; 
+        res&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;synchronized 선언이 됐기 때문에 한 쓰레드가 res를 사용하고 있다면 다른 쓰레드는 대기하기 때문에 Concurrency가 유지된다. 물론 ‘대기’하는 쓰레드가 발생하니 성능에 문제가 생기지 않도록 공유 리소스에 대해서만 정확히 동기화 처리를 하도록 주의해야한다.&lt;/p&gt;
+&lt;h3&gt;Producer - Consumer&lt;/h3&gt;
+&lt;p&gt;멀티 쓰레드를 잘 관리하기 위해 코딩 패턴들이 고안됐다. 그 중 가장 일반적으로 쓰이는게 &lt;em&gt;Producer - Consumer&lt;/em&gt; 패턴이다. &lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Producer&lt;/b&gt; - 작업을 생성해서 Queue에 쌓는 역할만 한다&lt;br&gt;
+&lt;b&gt;작업 Queue&lt;/b&gt; - Producer가 생성한 작업을 저장하고 있다가 Consumer에게 전달&lt;br&gt;
+&lt;b&gt;Consumer&lt;/b&gt; - 작업 Queue로 부터 작업을 할당받아서 처리하기만 한다  &lt;/p&gt;
+&lt;p&gt;즉 Concurrency는 작업 Queue가 다 관리해줄테니 Produce와 Consumer는 신경쓰지말고 자기 할일만 하면 된다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// Producer-Consumer 예제&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;token namespace&quot;&gt;java&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;util&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;LinkedList&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ThreadManager&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; args&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; q &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; producer &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Producer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;producer&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; consumer1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;consumer1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt; consumer2 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;consumer2&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+        producer&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        consumer1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        consumer2&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;LinkedList&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; jobs &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;LinkedList&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; t &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;isEmpty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            t &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;removeFirst&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; t&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; t&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addLast&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;t&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Producer&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Producer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;q &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token annotation punctuation&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;int&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            q&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;i&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;catch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;InterruptedException&lt;/span&gt; e&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Consumer&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;q &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token annotation punctuation&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;interrupted&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;token class-name&quot;&gt;Integer&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; q&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;pop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;token class-name&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;out&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;currentThread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot; pop : &quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;valueOf&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;i&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;catch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;InterruptedException&lt;/span&gt; e&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+                e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;위의 예제에서 consumer는 while로 계속 q를 체크하고 있기 때문에 전체적인 성능 저하가 예상된다. 자바는 이러한 문제를 해결하기 위해 특정 조건을 기반으로 스레드를 제어할 수 있도록 메소드를 제공한다.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;wait()&lt;/b&gt; - 특정 쓰레드가 점유하고 있던 lock이 해제되고 대기 중이던 다른 쓰레드가 실행가능하게 된다&lt;br&gt;
+&lt;b&gt;notify()&lt;/b&gt; - 쓰레드 스케줄러가 우선 순위 및 대기 시간을 고려하여 대기중이던 쓰레드 중에서 하나를 선택하여 Runnable 상태로 변경시킨다&lt;/p&gt;
+&lt;p&gt;폴링 방식으로 동작하던 위 예제를 다음 예제와 같이 인터럽트 방식으로 변경하면, Queue에 자원이 없는 경우 Consumer 쓰레드가 동작하지 않으므로 프로세스의 효율을 높일 수 있다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ResourceQueue&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;LinkedList&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; jobs &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;LinkedList&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; t &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;isEmpty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;wait&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;    
+        
+        t &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;removeFirst&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; t&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; t&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        jobs&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addLast&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;t&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Java Study (1)]]></title><description><![CDATA[시작 Reference Book : 자바를 다루는 기술 (2014), 김병부, 길벗 Fundamental 안다고 생각하지만 모르고 있는 것들 JVM Write once, run everywhere 기존의 언어의 경우 OS에 맞는 Libray / API…]]></description><link>https://clacis91.github.io//java-study-1/</link><guid isPermaLink="false">https://clacis91.github.io//java-study-1/</guid><pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;시작&lt;/h1&gt;
 &lt;p&gt;Reference Book : &lt;a href=&quot;https://www.gilbut.co.kr/book/view?bookcode=BN000854&quot;&gt;자바를 다루는 기술 (2014)&lt;/a&gt;, 김병부, 길벗&lt;/p&gt;
 &lt;h2&gt;Fundamental&lt;/h2&gt;
 &lt;p&gt;안다고 생각하지만 모르고 있는 것들&lt;/p&gt;
@@ -81,12 +287,8 @@ iMapper&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;기존의 언어의 경우 OS에 맞는 Libray / API 등을 가져와 쓰거나 그 특성에 맞게 개발해야하는 불편함이 존재했다.&lt;br&gt;
 JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application은 JVM 위에서 동작하도록 설계되어 있다. 각각에 맞는 JVM이 개발되어 있으니 개발자가 OS 환경까지 신경쓰지 말자는 것.&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;JVM 자체도 하나의 프로세스이기 때문에 리소스를 차지해서 하드웨어 성능이 떨어지는 경우 성능 이슈 발생 가능&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;System 명령어를 실행하기 위해서는 JNI (Java Native Interface)를 한 번 더 거쳐야하기 때문에 성능 이슈 발생 가능&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;JVM 자체도 하나의 프로세스이기 때문에 리소스를 차지해서 하드웨어 성능이 떨어지는 경우 성능 이슈 발생 가능&lt;/li&gt;
+&lt;li&gt;System 명령어를 실행하기 위해서는 JNI (Java Native Interface)를 한 번 더 거쳐야하기 때문에 성능 이슈 발생 가능&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4&gt;JVM의 구조&lt;/h4&gt;
 &lt;p&gt;&lt;span
@@ -106,9 +308,8 @@ JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application�
   &gt;&lt;/span&gt;
   &lt;img
         class=&quot;gatsby-resp-image-image&quot;
-        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
         alt=&quot;image1&quot;
-        title=&quot;&quot;
+        title=&quot;image1&quot;
         src=&quot;/static/7778a2a9cd8015fa611be7cde1789cb6/b9e4f/image1.png&quot;
         srcset=&quot;/static/7778a2a9cd8015fa611be7cde1789cb6/cf440/image1.png 148w,
 /static/7778a2a9cd8015fa611be7cde1789cb6/d2d38/image1.png 295w,
@@ -171,15 +372,9 @@ JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application�
 &lt;li&gt;
 &lt;p&gt;Wrapper Class?&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;int가 아닌 Integer, long이 아닌 Long등 기본 데이터형과 비슷하게 생긴 type들&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;기본 데이터형의 정보나 관련된 메소드를 사용할 수 있게 제공되는 클래스&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;ex) 시스템에서 제공하는 int형의 최대값을 구하고 싶을 때 : &lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;int가 아닌 Integer, long이 아닌 Long등 기본 데이터형과 비슷하게 생긴 type들&lt;/li&gt;
+&lt;li&gt;기본 데이터형의 정보나 관련된 메소드를 사용할 수 있게 제공되는 클래스&lt;/li&gt;
+&lt;li&gt;ex) 시스템에서 제공하는 int형의 최대값을 구하고 싶을 때 : &lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;(x) int.MAX_VALUE (기본형에 메소드가??) 
 (o) Integer.MAX_VALUE (객체로 존재하기 때문에 메소드 활용 가능)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -248,9 +443,8 @@ JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application�
   &gt;&lt;/span&gt;
   &lt;img
         class=&quot;gatsby-resp-image-image&quot;
-        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
         alt=&quot;image4&quot;
-        title=&quot;&quot;
+        title=&quot;image4&quot;
         src=&quot;/static/a4a8fd9c4f29f6225aeab21557ac2086/b9e4f/image4.png&quot;
         srcset=&quot;/static/a4a8fd9c4f29f6225aeab21557ac2086/cf440/image4.png 148w,
 /static/a4a8fd9c4f29f6225aeab21557ac2086/d2d38/image4.png 295w,
@@ -341,7 +535,7 @@ JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application�
 &lt;span class=&quot;token class-name&quot;&gt;SomeClass&lt;/span&gt; some &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;SomeClass&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;token class-name&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;token generics&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;SomeClass&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;cls &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;SomeClass&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;token class-name&quot;&gt;Field&lt;/span&gt; f &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cls&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getField&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;someField&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token class-name&quot;&gt;Object&lt;/span&gt; obj &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; f&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;some&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Gatsby - Github Page 만들기]]></title><description><![CDATA[gatsbyhttps://github.com/gatsbyjs/gatsby-starter-blognetlify 없이 github page deployhttp://jarednielsen.com/deploy-gatsbyjs-github-pages-user…]]></description><link>https://clacis91.github.io//gatsby-setting/</link><guid isPermaLink="false">https://clacis91.github.io//gatsby-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;ul&gt;
+&lt;span class=&quot;token class-name&quot;&gt;Object&lt;/span&gt; obj &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; f&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;some&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Gatsby - Github Page 만들기]]></title><description><![CDATA[gatsby https://github.com/gatsbyjs/gatsby-starter-blog netlify 없이 github page deploy http://jarednielsen.com/deploy-gatsbyjs-github-pages…]]></description><link>https://clacis91.github.io//gatsby-setting/</link><guid isPermaLink="false">https://clacis91.github.io//gatsby-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;ul&gt;
 &lt;li&gt;gatsby&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;a href=&quot;https://github.com/gatsbyjs/gatsby-starter-blog&quot;&gt;https://github.com/gatsbyjs/gatsby-starter-blog&lt;/a&gt;&lt;/p&gt;
@@ -353,23 +547,18 @@ JVM은 OS와 Java 프로그램의 매개체 역할을 하고, Java Application�
 &lt;li&gt;font 설정&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;a href=&quot;http://kyleamathews.github.io/typography.js/&quot;&gt;http://kyleamathews.github.io/typography.js/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;typography.js 파일에서 설정 변경&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Spring Boot로 웹서비스 개발 - 1]]></title><description><![CDATA[https://jojoldu.tistory.com/250?category=635883따라하는 중개발환경은 내맘대로IntelliJ -> STS4Spring Boot 1.x -> Spring Boot 2.xGradle -> MavenTravis-CI…]]></description><link>https://clacis91.github.io//springdemo-1/</link><guid isPermaLink="false">https://clacis91.github.io//springdemo-1/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;https://jojoldu.tistory.com/250?category=635883&quot;&gt;https://jojoldu.tistory.com/250?category=635883&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;따라하는 중&lt;/p&gt;
+&lt;p&gt;typography.js 파일에서 설정 변경&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Eclipse에서 tomcat server 설정 (Mac)]]></title><description><![CDATA[Eclipse(STS)에서 tomcat server 설정 시  Unknown version of Tomcat was specified 에러 발생  https://stackoverflow.com/a/34278481 osx에서 brew로 tomcat…]]></description><link>https://clacis91.github.io//tomcat-osx-eclipse/</link><guid isPermaLink="false">https://clacis91.github.io//tomcat-osx-eclipse/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Eclipse(STS)에서 tomcat server 설정 시 &lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Unknown version of Tomcat was specified&lt;/b&gt; 에러 발생 &lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/a/34278481&quot;&gt;https://stackoverflow.com/a/34278481&lt;/a&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;개발환경은 내맘대로&lt;/p&gt;
+&lt;p&gt;osx에서 brew로 tomcat 설치 시 tomcat 경로를 다르게 설정해줘야한다&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;IntelliJ -&gt; STS4&lt;/li&gt;
-&lt;li&gt;Spring Boot 1.x -&gt; Spring Boot 2.x&lt;/li&gt;
-&lt;li&gt;Gradle -&gt; Maven&lt;/li&gt;
-&lt;li&gt;Travis-CI -&gt; Jenkins&lt;/li&gt;
-&lt;li&gt;MariaDB -&gt; PostgreSQL&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;</content:encoded></item><item><title><![CDATA[Lombok annotations]]></title><description><![CDATA[lombok
+&lt;li&gt;/usr/local/Cellar/tomcat/{version}/libexec&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[Lombok annotations]]></title><description><![CDATA[lombok
 http://wonwoo.ml/index.php/post/1607
 https://www.daleseo.com/lombok-popular-annotations/
-http://kwonnam.pe.kr/wiki/java/lomboklombok…]]></description><link>https://clacis91.github.io//lombok-setting/</link><guid isPermaLink="false">https://clacis91.github.io//lombok-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;lombok
+http://kwonnam.pe.kr/wiki/java/lombok lombok…]]></description><link>https://clacis91.github.io//lombok-setting/</link><guid isPermaLink="false">https://clacis91.github.io//lombok-setting/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;lombok
 &lt;a href=&quot;http://wonwoo.ml/index.php/post/1607&quot;&gt;http://wonwoo.ml/index.php/post/1607&lt;/a&gt;
 &lt;a href=&quot;https://www.daleseo.com/lombok-popular-annotations/&quot;&gt;https://www.daleseo.com/lombok-popular-annotations/&lt;/a&gt;
 &lt;a href=&quot;http://kwonnam.pe.kr/wiki/java/lombok&quot;&gt;http://kwonnam.pe.kr/wiki/java/lombok&lt;/a&gt;&lt;/p&gt;
@@ -389,12 +578,17 @@ http://kwonnam.pe.kr/wiki/java/lomboklombok…]]></description><link>https://cla
 	&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; email&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; password&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 	&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; name&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Eclipse에서 tomcat server 설정 (Mac)]]></title><description><![CDATA[Eclipse(STS)에서 tomcat server 설정 시 Unknown version of Tomcat was specified 에러 발생 https://stackoverflow.com/a/34278481osx에서 brew로 tomcat…]]></description><link>https://clacis91.github.io//tomcat-osx-eclipse/</link><guid isPermaLink="false">https://clacis91.github.io//tomcat-osx-eclipse/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Eclipse(STS)에서 tomcat server 설정 시 &lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Unknown version of Tomcat was specified&lt;/b&gt; 에러 발생 &lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/a/34278481&quot;&gt;https://stackoverflow.com/a/34278481&lt;/a&gt;&lt;/p&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Spring Boot로 웹서비스 개발 - 1]]></title><description><![CDATA[https://jojoldu.tistory.com/250?category=635883 따라하는 중 개발환경은 내맘대로 IntelliJ -> STS4 Spring Boot 1.x -> Spring Boot 2.x Gradle -> Maven Travis…]]></description><link>https://clacis91.github.io//springdemo-1/</link><guid isPermaLink="false">https://clacis91.github.io//springdemo-1/</guid><pubDate>Tue, 02 Jul 2019 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;https://jojoldu.tistory.com/250?category=635883&quot;&gt;https://jojoldu.tistory.com/250?category=635883&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;따라하는 중&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;osx에서 brew로 tomcat 설치 시 tomcat 경로를 다르게 설정해줘야한다&lt;/p&gt;
+&lt;p&gt;개발환경은 내맘대로&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;/usr/local/Cellar/tomcat/{version}/libexec&lt;/li&gt;
-&lt;/ul&gt;</content:encoded></item></channel></rss>
+&lt;li&gt;IntelliJ -&gt; STS4&lt;/li&gt;
+&lt;li&gt;Spring Boot 1.x -&gt; Spring Boot 2.x&lt;/li&gt;
+&lt;li&gt;Gradle -&gt; Maven&lt;/li&gt;
+&lt;li&gt;Travis-CI -&gt; Jenkins&lt;/li&gt;
+&lt;li&gt;MariaDB -&gt; PostgreSQL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;</content:encoded></item></channel></rss>
