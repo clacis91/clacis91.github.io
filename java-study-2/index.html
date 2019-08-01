@@ -9,7 +9,64 @@
 <p>여러 자료를 찾아봐도 abstract class의 장점이 막 와닿지는 않는다. 그냥 class를 상속하고 자식별로 구현이 필요한 기능이 있다면 interface로 정의해서 붙여버리면 되지 않나? 이쪽이 interface를 붙였다 뗐다 하는 확장성에서도 유리할거고. 코드나 파일의 파편화를 줄일 수 있다는 장점 말고는 떠오르지 않는다.</p>
 <p>경험으로 느끼는 수밖에 없을거같다..</p>
 <h2>Collection</h2>
-<p>TBW</p>
+<p>크게 <em>List</em>, <em>Set</em>, <em>Map</em> 이렇게 3개의 인터페이스로 나눌 수 있다. 각각은 Collection 인터페이스를 상속하고 있다.</p>
+<ul>
+<li>List : 순서를 갖고 있지만 중복이 허용된 객체들의 집합</li>
+<li>Set : 중복을 허용하지 않는 객체들의 집합</li>
+<li>Map : Key-Value 쌍으로 이루어졌으며 고유값인 Key와 연결된 객체들을 관리하는 집합</li>
+</ul>
+<h3>List</h3>
+<ul>
+<li>ArrayList</li>
+<li>Vector</li>
+<li>LinkedList</li>
+<li>Stack</li>
+</ul>
+<h3>Set</h3>
+<ul>
+<li>HashSet</li>
+<li>LinkedHashSet</li>
+<li>TreeSet</li>
+</ul>
+<h3>Map</h3>
+<ul>
+<li>HashMap</li>
+<li>Hashtable</li>
+<li>LinkedHashMap</li>
+<li>TreeMap</li>
+</ul>
+<h3>어떤 클래스를 써야하는가?</h3>
+<p>위 클래스들은 어차피 검색하면 메소드나 사용법은 다 나온다. 결국 어느 상황에 어떤 클래스를 선택하느냐가 중요.<br>
+고려할 것은 <em>속도</em>와 <em>Thread-safe</em>다. 속도가 빠른 클래스는 동기화 문제가 있고, 이것을 해결하면 bottle neck이 발생한다. 이러한 trade-off를 잘 고려해서 사용해야 한다.</p>
+<table>
+<thead>
+<tr>
+<th align="center">인터페이스</th>
+<th align="center">가장 빠른 클래스</th>
+<th align="center">Thread-safe 클래스</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">List</td>
+<td align="center">ArrayList</td>
+<td align="center">Vector</td>
+</tr>
+<tr>
+<td align="center">Set</td>
+<td align="center">HashSet</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">Map</td>
+<td align="center">HashMap</td>
+<td align="center">Hashtable</td>
+</tr>
+</tbody>
+</table>
+<h3>Iterator / Enumeration</h3>
+<p>둘다 Collection 반복 처리를 위한 객체이다. 차이는?<br>
+Enumeration은 thread-safe한 클래스에서 제공하며 Iterator는 그렇지 않은 클래스에서 제공한다.  </p>
 <h2>Exception</h2>
 <p>TBW</p>
 <hr>
