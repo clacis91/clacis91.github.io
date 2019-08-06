@@ -14,4 +14,8 @@ public class Champion {
     public boolean getAvailable() {
         return available;
     }
+
+    public void setDisable() {
+        available = false;
+    }
 }

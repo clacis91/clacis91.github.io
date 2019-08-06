@@ -1,4 +1,9 @@
 public interface Summoner { 
-    public void selectChampion(ChampionPool championPool); 
-    public String getPick();
+    public Champion selectChampion(ChampionPool champions); 
+    public void receiveTurn();
+
+    public Champion getPick();
+    public Champion getBan();
+    public void setPick(Champion champion);
+    public void setBan(Champion champion);
 }

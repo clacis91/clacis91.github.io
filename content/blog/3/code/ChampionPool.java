@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class ChampionPool {
     }
 
     public void registerChampions(Champion... newChampions) {
-        for(Champion champion : newChampions)
+        for(Champion champion : newChampions) 
             champions.add(champion);
     }
 
@@ -26,13 +27,20 @@ public class ChampionPool {
         StringBuilder sb = new StringBuilder();
 
         for(Champion champion : champions) {
-            sb.append( String.format("%-10s", champion.getName()) );
+            String championName = champion.getAvailable() ? champion.getName() : "";
+            sb.append( String.format("%-10s", championName) );
         }
 
         System.out.println(sb.toString());
     }
 
     public Champion randomSelect() {
-        return champions.get( (int) (Math.random() * champions.size()) );
+        Champion candidate = null;
+        while(true) {
+            candidate = champions.get( (int)(Math.random() * champions.size()) );
+            if(candidate.getAvailable()) {
+                return candidate;
+            }
+        }
     }
 }
