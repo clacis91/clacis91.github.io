@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `기록`,
+    title: `(대충 공부한거 적는다는 제목)`,
     author: `WJNAM`,
     description: `A starter blog demonstrating what Gatsby can do.`,
     siteUrl: `https://clacis91.github.io/`,
