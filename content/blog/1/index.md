@@ -87,7 +87,7 @@ TDD까지 적용해볼까도 했지만 오바인거 같다.
 ```java
 public class User {
     private String summonerId;
-    private ? ban;
+    //private ? ban;
     private String pick;
     private boolean turn;
 
