@@ -8,7 +8,6 @@ public class Room {
     
     private List<Champion> banList;
     private List<Champion> pickList;
-    //private Set<Champion> pickSet;
 
     public Room(LolMap map, List<Summoner> summoners) {
         this.map = map;
@@ -22,16 +21,17 @@ public class Room {
     public void progressBan() {
         for(Summoner summoner : summoners) {
             Champion selected = summoner.selectChampion(championPool);
-            summoner.setBan(selected);
-            //System.out.println(summoner.getPick());
+            banList.add(selected);
         }
     }
 
     public void progressPick() {
         for(Summoner summoner : summoners) {
+            System.out.println("- " + summoner.getSummonerId() + " 소환사님 선택 차례 -");
             Champion selected = summoner.selectChampion(championPool);
             summoner.setPick(selected);
-            System.out.println(summoner.getPick().getName());
+            pickList.add(selected);
+            System.out.println(summoner.getSummonerId() + "님의 픽 : " + selected.getName());
         }
     }
 

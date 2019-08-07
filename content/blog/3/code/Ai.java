@@ -1,12 +1,17 @@
 public class Ai implements Summoner {
     private String summonerId;
     private Champion pick;
-    private Champion ban;
     private boolean turn;
+
+    public Ai(String summonerId) {
+        this.summonerId = summonerId;
+    }
 
     @Override
     public Champion selectChampion(ChampionPool champions) {
-        return null;
+        Champion selected = champions.randomSelect();
+        selected.setDisable();
+        return selected;
     }
 
     @Override
@@ -15,21 +20,16 @@ public class Ai implements Summoner {
     }
 
     @Override
-    public void setBan(Champion champion) {
-        this.ban = champion;
-    }
-
-    @Override
     public Champion getPick() {
         return pick;
     }
 
     @Override
-    public Champion getBan() {
-        return ban;
+    public void receiveTurn() {
     }
 
     @Override
-    public void receiveTurn() {
+    public String getSummonerId() {
+        return summonerId;
     }
 }

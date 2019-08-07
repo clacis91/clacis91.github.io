@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class User implements Summoner {
     private String summonerId;
     private Champion pick;
-    private Champion ban;
     private boolean turn;
 
     public User(String summonerId) {
@@ -12,7 +11,6 @@ public class User implements Summoner {
 
     @Override
     public Champion selectChampion(ChampionPool champions) {
-        System.out.println("- " + summonerId + " 소환사님 선택 차례 -");
         System.out.println("선택 가능 챔피언 목록");
         champions.showChampions();
         System.out.println("랜덤 선택 : -1");
@@ -30,22 +28,17 @@ public class User implements Summoner {
     }
 
     @Override
-    public void setBan(Champion champion) {
-        this.ban = champion;
-    }
-
-    @Override
     public Champion getPick() {
         return pick;
     }
 
     @Override
-    public Champion getBan() {
-        return ban;
+    public void receiveTurn() {
     }
 
     @Override
-    public void receiveTurn() {
+    public String getSummonerId() {
+        return summonerId;
     }
 
     private Champion getSelectChampion(ChampionPool champions, String in) {
