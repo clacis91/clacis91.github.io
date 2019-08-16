@@ -216,3 +216,222 @@ public class FileDisplayImpl extends DisplayImpl {
 
 #### 예제 프로그램 - 가위바위보
 
+단순한 가위바위보를 하는 데에도 여러가지 전략이 있을 수 있다. '이기면 냈던 손을 또 낸다' 라는 전략도 있을 수 있고, '상대가 직전에 냈던 것으로 다음 것을 예측해서 낸다' 라는 전략도 있을 수 있다.
+
+|Class(Interface)|Description|
+|:--------------:|:----------|
+|Hand|가위바위보의 '손'을 나타내는 클래스|
+|Strategy|가위바위보의 '전략'을 나타내는 클래스|
+|WinningStrategy|이기면 같은 손을 또 내는 전략 클래스|
+|ProbStrategy|다음 손을 확률적으로 계산해서 내는 전략 클래스|
+|Player|가위바위보를 하는 사람 클래스|
+
+```java
+public class Hand {
+    public static final int HANDVALUE_MOOK = 0;
+    public static final int HANDVALUE_JJI = 1;
+    public static final int HANDVALUE_PPA = 2;
+    public static final Hand[] hand = {
+        new Hand(HANDVALUE_MOOK),
+        new Hand(HANDVALUE_JJI),
+        new Hand(HANDVALUE_PPA),
+    };
+    public static final String[] handName = {
+        "주먹", "가위", "보"
+    };
+    
+    private int handValue;
+    private Hand(int handValue) {
+        this.handValue = handValue;
+    }
+
+    public static Hand getHand(int handValue) {
+        return hand[handValue];
+    }
+
+    public boolean isStrongerThan(Hand h) {
+        return fight(h) == 1;
+    }
+
+    public boolean isWeakerThan(Hand h) {
+        return fight(h) == -1;
+    }
+
+    // 자신이 낸 손을 이기는 손을 반환
+    public int getStronger() {
+        int stronger = this.handValue - 1;
+        if(stronger < 0) 
+            return 2;
+        return stronger;
+    }
+
+    // 자신이 낸 손으로 이기는 손을 반환
+    public int getWeaker() {
+        return (this.handValue + 1) % 3;
+    }
+
+    private int fight(Hand h) {
+        if(this == h) {
+            return 0;
+        }
+        else if((this.handValue + 1) % 3 == h.handValue) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    public String toString() {
+        return handName[handValue];
+    }
+}
+```
+
+가위바위보 게임의 규칙과 관련된 내용이 구현되어 있는 클래스이다. 게임의 규칙은 하나만 존재하면 되므로 Singleton 형태로 구현되어 있다.
+
+```java
+public interface Strategy {
+    public Hand nextHand();
+    public void study(boolean win);
+}
+```
+
+```java
+import java.util.Random;
+
+public class WinningStrategy implements Strategy {
+    private Random random;
+    private boolean won = false;
+    private Hand prevHand;
+    public WinningStrategy(int seed) {
+        random = new Random(seed);
+    }
+
+    public Hand nextHand() {
+        if(!won) {
+            prevHand = Hand.getHand(random.nextInt(3));
+        }
+        return prevHand;
+    }
+
+    public void study(boolean win) {
+        won = win;
+    }
+}
+```
+
+첫번째 전략 - <U>이기면 그 손을 다음에 또 낸다는 단순한 전략</U>
+
+```java
+import java.util.Random;
+
+public class ProbStrategy implements Strategy {
+    private Random random;
+    private boolean won = false;
+    private Hand prevHand;
+    public ProbStrategy(int seed) {
+        random = new Random(seed);
+    }
+
+    public Hand nextHand() {
+        Hand prevEnemyHand;
+        if(won) {
+            // 이겼다면 자신의 손보다 약한 손이 상대의 손이다
+            prevEnemyHand = Hand.getHand(prevHand.getWeaker()); 
+            // 상대의 손보다 약한 손을 반환
+            prevHand = Hand.getHand(prevEnemyHand.getWeaker()); 
+        }
+        else {
+            prevHand = Hand.getHand(random.nextInt(3));
+        }
+        return prevHand;
+    }
+
+    public void study(boolean win) {
+        won = win;
+    }
+}
+```
+
+(책에 나와있는 알고리즘이 쓸데없이 긴것 같아서 다른 전략을 만들어봄)
+
+두번째 전략 - <U>상대가 졌다면 전판과 똑같은 손은 연속으로 안낼것이라고 생각하는 전략</U>
+
+(상대가 가위를 내서 졌다면? -> 주먹 아니면 보를 낼것이다 -> 보를 내면 지지는 않는다)  
+=> *상대가 방금 턴에 낸 손보다 약한 손을 내면 된다*
+
+```java
+public class Player {
+    private String name;
+    private Strategy strategy;
+    private int winCount;
+    private int loseCount;
+    private int gameCount;
+
+    public Player(String name, Strategy strategy) {
+        this.name = name;
+        this.strategy = strategy;
+    }
+
+    public Hand nextHand() {
+        return strategy.nextHand();
+    }
+
+    public void win() {
+        strategy.study(true);
+        winCount++;
+        gameCount++;
+    }
+
+    public void lose() {
+        strategy.study(false);
+        loseCount++;
+        gameCount++;
+    }
+
+    public void even() {
+        strategy.study(false);
+        gameCount++;
+    }
+
+    public String toString() {
+        return "[" + name + ":" + gameCount + " games, " + winCount + " wins, " + loseCount + " loses]";
+    }
+}
+```
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Player player1 = new Player("유저1", new WinningStrategy((int)System.currentTimeMillis()));
+        Player player2 = new Player("유저2", new ProbStrategy((int)System.currentTimeMillis() + 1));
+
+        for(int i = 0; i < 10000; i++) {
+            Hand player1Hand = player1.nextHand();
+            Hand player2Hand = player2.nextHand();
+
+            if(player1Hand.isStrongerThan(player2Hand)) {
+                player1.win();
+                player2.lose();
+            }
+            else if(player1Hand.isWeakerThan(player2Hand)) {
+                player1.lose();
+                player2.win();
+            }
+            else {
+                player1.even();
+                player2.even();
+            }
+        }
+        System.out.println(player1.toString());
+        System.out.println(player2.toString());
+    }
+}
+```
+
+player1은 WinningStrategy를, player2는 ProbStrategy 객체를 생성해서 전략으로 채택했다.
+
+* Strategy 패턴을 사용하면 시스템 동작 중에도 알고리즘을 유연하게 교체하는 것이 가능하다. 
+  * 예를들어 메모리가 부족한 상태가 되면 속도는 느리지만 메모리를 조금 사용하는 알고리즘을 사용하고, 메모리가 여유 있으면 속도가 빠르면서 메모리를 많이 사용하는 알고리즘을 사용할 수도 있다. 
+  * 이 때 메모리 상태에 따라 Strategy 객체를 바꿔서 할당하기만 해도 알고리즘을 교체할 수 있다.
