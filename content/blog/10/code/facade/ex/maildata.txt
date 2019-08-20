@@ -1,0 +1,3 @@
+abc@cba.net=ABC
+test@example.com=TEST
+hello@world.co.kr=HELLO
