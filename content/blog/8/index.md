@@ -107,7 +107,7 @@ ChampionPoolGenerator 구현시 신경쓴 부분이 있는데, 한 클래스 안
 
 현재 DB는 허접한 File IO 방식으로 구현되어 있지만, 언제 갑자기 열정이 샘솟아서 DBMS를 활용해서 DB를 구축하게 될지 모르는 일이다. 하지만 챔피언 풀을 생성하는 메소드는 DB가 file이건, MySQL이건, MongoDB건 상관하지 않고 원하는 형태로 데이터가 들어오기만 하면 챔피언 풀 객체를 생성할 수 있어야한다. 
 
-기왕 메소드를 분리시킨김에 아예 클래스를 나눠버렸다.
+기왕 메소드 기능을 분리시킨김에 아예 클래스를 나눠버렸다.
 
 ### ChampionDBManager
 
@@ -198,3 +198,64 @@ public class ChampionPoolGenerator {
 챔피언 풀 생성을 위해 ChampionDBManager 인스턴스를 하나 생성해서 챔피언 정보를 불러온다. DB가 변경됐다면?  
 *championDBManager = new ChampionFileDBManager();* 에서 *ChampionFileDBManager만* 바꿔주면 될 것 같다.
 
+이렇게 분리하고 나니 ChampionPoolGenerator가 *singleton*이어도 문제 없을 것 같다는 생각이 들었다. 챔피언 풀 인스턴스를 찍어내는 기계는 딱 하나만 존재해도 문제 없다.  
+단, 여러개의 방에서 동시에 챔피언 풀 생성을 요청하는 경우를 고려해야 한다. generate 내부에서 Iterator 루프가 도는 중에 다른 곳에서 generate를 호출하면 루프에 영향을 주는일이 없는지? synchronized로 해결되는지? 이런거...  
+일단은 TODO로
+
+```
+#champion.db
+1,가렌
+2,갈리오
+3,갱플랭크
+...
+18,라칸
+19,람머스
+20,럭스
+```
+
+일단 파일에는 (귀찮아서) 20개의 챔피언 정보만 가나다 순으로 등록해뒀다. 그리고 혹시모를 인덱싱을 위해 챔피언 번호도 추가. 파일 포맷이 변경되어도 parseChampion 메소드만 잘 수정하면 다른 곳은 건드릴 필요가 없다.
+
+```
+--실행화면--
+- 에블바디언더스텐 소환사님 선택 차례 -
+선택 가능 챔피언 목록
+가렌        갈리오       갱플랭크      그라가스      그레이브스     나르        나미        나서스       노틸러스      녹턴        누누와 윌럼프   니달리       니코        다리우스      다이애나      드레이븐      라이즈       라칸        람머스       럭스        
+랜덤 선택 : -1
+```
+
+파일에 추가한대로 챔피언 목록이 잘 출력된다. (선택도 잘 된다.)  
+챔피언이 충분하니 이제 3대3으로 간단한 밴픽을 진행해봐도 될 것 같다.
+
+```java
+// Main.java
+...
+
+Summoner ai1 = new Ai("봇1");
+Summoner ai2 = new Ai("봇2");
+Summoner ai3 = new Ai("봇3");
+entry.add(ai1);
+entry.add(ai2);
+entry.add(ai3);
+
+Room room = new Room(null, entry);
+
+room.progressBan();
+room.progressPick();
+room.printBanPickResult();
+
+...
+```
+
+미리 만들어놓은 progressBan() 메소드를 progressPick() 전에 호출해서 밴-픽 순서로 진행을 하고, 결과를 출력해주는 메소드를 하나 만들었다. 
+
+```
+=== 밴픽 결과 ===
+금지된 챔피언 목록[3. 갱플랭크, 5. 그레이브스, 8. 나서스, 14. 다리우스, 6. 나르, 13. 니코]
+챔피언 선택 결과
+에블바디언더스텐 님 : 그라가스
+ManySolutions 님 : 노틸러스
+바데야 님 : 녹턴
+봇1 님 : 럭스
+봇2 님 : 라이즈
+봇3 님 : 나미
+```
