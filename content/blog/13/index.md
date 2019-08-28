@@ -387,3 +387,233 @@ public class DaoFactory {
 예제에서 UserDAO는 DaoFactory에 의해 생성되고, 그 DaoFactory는 자신이 어떤 DAO를 생성할지 main에서 결정해줘야 한다. DaoFactory에서 ConnectionMaker를 반환하는 메소드에서도 실제로 객체를 생성하는 것은 구현체에게 맡기고 있다. 
 
 이런식으로 이미 스프링 없이도 IoC를 적용한 객체지향 코딩은 가능하다. 스프링은 이러한 IoC원칙을 극한까지 적용시킬 수 있도록 도와주는 프레임워크다.
+
+### 스프링의 IoC
+
+위에서 만든 DaoFactory는 프로그램에서 사용할 여러 객체들을 생성해주고 관리하는 역할을 한다. 스프링은 이러한 객체들(스프링에서는 이 객체들을 빈Bean 이라고 한다)의 Factory (Bean Factory)의 구현을 일반화 시킨 것이라고 생각하면 된다.
+
+어플리케이션 컨텍스트Appliaction Context라는 것은 빈 팩토리와 동일하면서도 그 개념을 확장하여 전체적인 제어 작업을 담당하는 IoC 엔진이라고 생각하면 된다. 어플리케이션 컨텍스트는 코드에 이런 정보가 직접 담겨있진 않고 별도의 설정을 가져와 활용한다.
+
+기존의 DaoFactory를 어플리케이션 컨텍스트에서 사용할 *설정을 위한 클래스*로 변경하기 위해서는 다음과 같이 <b>Annotation</b>을 붙여주면 된다.
+
+```java
+@Configuration
+public class DaoFactory {
+	@Bean
+	public UserDAO userDao() {
+		return new UserDAO(connectionMaker());
+	}
+	
+	@Bean
+	public ConnectionMaker connectionMaker() {
+		return new NConnectionMaker(); 
+	}
+}
+```
+
+*@Configuration* annotation은 설정을 담당하는 클래스라는 것을 명시해주며, *@Bean*은 사용될 빈 객체가 된다는 것을 명시해준다. @Configuration로 만들어진 설정들은 *AnnotationConfigApplicationContext* 객체로 ApplicationContext를 생성하고, getBean() 메소드로 그 안의 빈들을 가져올 수 있다.
+
+```java
+public class ApplicationMain {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+		ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+		
+        UserDAO dao = context.getBean("userDao", UserDAO.class);
+        ...
+```
+
+DaoFactory를 직접 사용하지 않고, 어플리케이션 컨텍스트에 등록된 것을 가져다 쓰는 방식을 사용하면 다음과 같은 장점이 있다.
+
+* 클라이언트는 구체적인 팩토리 클래스를 알 필요가 없다
+* 종합 IoC 서비스를 제공해준다
+  * 전처리, 후처리, 인터셉팅 등
+* 빈을 검색하는 다양한 방법을 제공한다
+
+### 싱글톤 레지스트리와 오브젝트 스코프
+
+스프링 프레임워크에서 빈 객체는 싱글톤 객체로 관리된다. 때문에 어플리케이션 컨텍스트는 싱글톤 객체를 관리하는 싱글톤 레지스트리 Singleton registry라고 불리기도 한다.
+
+스프링은 보통 서버 스케일의 시스템에서 사용된다. 만약 서버에서 클라이언트에 요청마다 객체를 생성하면 몇백만개의 객체가 생성될 가능성도 존재한다. 때문에 서버에서는 객체 관리를 위한 서비스 객체에 대한 개념이 옛날부터 존재했었고, 그중에서 스프링은 싱글톤 방식을 제안하는 것이다.
+
+하지만 싱글톤 패턴에는 몇가지 단점이 존재한다
+
+>* private 생성자를 갖기 때문에 상속이 불가능
+> 오브젝트 생성이 어렵기 때문에 테스트 코드 작성이 어려움
+>* 서버 환경에서는 한개의 객체만 있다는 것을 보장하기 어려움
+>   * 분산 환경에서 여러대의 서버가 싱글톤 객체를 각자 하나씩 갖고 있다면 그건 싱글톤인가?
+> * 전역 상태의 객체이기 때문에 바람직하지 않다
+
+때문에 스프링에서는 싱글톤 레지스트리 라는 개념이 도입되어 위와 같은 문제점을 해결한다. 단순히 말해 오브젝트 생성을 아무나 하지 않고, 어플리케이션 컨텍스트가 관리하기 때문에 실질적으로 싱글톤으로 만들지 않아도, 싱글톤 방식으로 동작하도록 설계가 되어 있다는 것이다. 
+
+싱글톤 객체는 여러 스레드에서 공유하는 경우 내부의 상태 정보가 충돌나는 상황이 쉽게 발생할 수 있다. 때문에 서비스 객체의 경우 보통 내부에 상태 정보를 갖지 않는 Stateless한 방식으로 만들어져야한다. (대신 그 정보는 파라미터나 메소드의 로컬 변수 등으로 처리해야 한다.)
+
+스프링이 관리하는 객체는 각자가 적용되는 범위가 존재하는데 이를 빈의 스코프Scope 라고 한다. 싱글톤 스코프는 한 개의 객체만 생성되어 스프링 컨테이너가 존재하는 동안 계속 유지된다. (대부분의 빈이 싱글톤 스코프다) 경우에 따라서 다른 스코프를 가질 수 있다. 예를 들어 prototype 스코프는 빈을 요청할 때 마다 새로운 객체를 생성해준다. HTTP 요청이나 세션을 관리하는 빈인 request나 session들은 각각의 스코프를 가진다.
+
+### 의존관계 주입(Dependency Injection)
+
+의존 관계는 A가 변하면 B에 영향을 미치는 관계를 뜻한다. 만약 A의 메소드가 변경된다면 그것을 사용하는 B에서도 수정이 이뤄져야한다. 단 의존관계에는 방향성이 있다. B가 수정됐지만 A에 영향을 미치지 않으면 의존하지 않는 상태이다.
+
+UserDAO 예제를 보면, UserDAO는 ConnectionMaker의 makeConnection()메소드를 사용하고 있으니 ConnectionMaker에 의존하고 있다. 하지만 ConnectionMaker의 구현체인 NConnectionMaker 등에는 의존관계가 없다. 이렇게 인터페이스에만 의존 관계를 만들어두면 구현 클래스와는 *느슨한 의존 관계*가 있다고 말한다.
+
+느슨한 의존 관계는 코드 상에서는 직접적인 의존 관계가 드러나지 않고, 런타임 시점에서 결정되는 관계를 뜻한다. 이 관계는 컨테이너나 팩토리 같은 제 3자가 결정한다. 의존 관계는 *사용할 오브젝트의 레퍼런스를 외부에서 주입*해줌으로써 만들어진다.
+
+DI를 적용하기 전의 UserDAO의 생성자는 다음과 같았다.
+
+```java
+public UserDAO() {
+    connectionMaker = new NconnectionMaker();
+}
+```
+
+이 경우 UserDAO와 NconnectionMaker는 의존 관계가 형성된다. 만약 NconnectionMaker에 파라미터가 추가된다면 UserDAO도 바뀐 사용법에 따라 수정돼야 하는 것이다. 이러한 형태에서 DI를 적용하면 다음과 같아진다.
+
+```java
+public UserDAO(ConnectionMaker connectionMaker) {
+    this.connectionMaker = connectionMaker;
+}       
+```
+
+UserDAO는 런타임에 외부에서 생성된 connectionMaker를 파라미터로 받고, 그것이 어떻게 생성됐는지는 신경 쓸 필요가 없다.
+
+#### 의존관계 검색 (Dependency Lookup)
+
+보통 런타임에 주입될 빈이 결정되긴 하지만, 미리 주입받을 객체의 이름을 알고 있다가 필요할 때 검색하여 주입받아 쓰는 경우도 있다.
+
+```java
+UserDAO dao = context.getBean("userDao", UserDAO.class);
+```
+
+위 코드는 컨테이너 상에 userDao 라는 빈은 이미 존재하지만 현재 메소드에서는 주입받지 못했기 때문에 직접 검색하여 사용하는 수 밖에 없는 경우다. main() method가 이러한 경우에 해당된다. main() 에는 빈을 주입해줄 방법이 없다. 때문에 어플리케이션의 기동 시점에서 적어도 한번은 의존 관계 검색 방식으로 객체를 가져올 필요가 있다. 
+
+#### DI 응용
+
+* 부가기능 추가
+
+만약 기존 예제에서 연결횟수를 카운팅하는 기능이 추가된 ConnectionMaker를 만든다면? DAO 코드 안에서 연결횟수를 카운트 하는 변수를 추가해야 하나? ConnectionMaker를 수정해야하나? 
+
+이러한 고민을 해결하기 위해 DI 컨테이너 구조에서는 DAO와 Connection 사이에 새로운 객체를 만들어 카운트를 관리해서 기존 코드는 건드리지 않는 방식을 사용한다.
+
+```java
+public class CountingConnectionMaker implements ConnectionMaker {
+	int counter = 0;
+	private ConnectionMaker realConnectionMaker;
+	
+	public CountingConnectionMaker(ConnectionMaker connectionMaker) {
+		this.realConnectionMaker = connectionMaker;
+	}
+	
+	public Connection makeConnection() throws ClassNotFoundException, SQLException {
+		this.counter++;
+		return realConnectionMaker.makeConnection();
+	}
+	
+	public int getCount() {
+		return this.counter;
+	}
+}
+```
+
+위 코드에서는 새로운 ConnectionMaker 구현체인 CountingConnectionMaker의 코드이다. CountingConnectionMaker는 자신이 직접 ConnectionMaker 객체를 생성하지는 않고, 다른 ConnectionMaker를 주입받아 사용한다. 하지만 스스로도 makeConnection() 메소드를 갖고 있어 ConnectionMaker 인터페이스를 구현하고 있다. makeConnection() 메소드에서는 주입 받은 ConnectionMaker의 makeConnection() 메소드를 호출하고 그 횟수를 카운팅하는 구조로 되어있다. UserDAO는 ConnectionMaker 인터페이스에만 의존하고 있기 때문에, ConnectionMaker의 구현체라면 무엇이든지 주입 받을 수 있다. 
+
+이렇게 추가된 구현체를 활용해서 설정 클래스에서 새로운 의존 관계를 만들어주면 된다.
+
+```java
+@Configuration
+public class DaoFactory {
+	@Bean
+	public UserDAO userDao() {
+		return new UserDAO(connectionMaker());
+	}
+	
+	@Bean
+	public ConnectionMaker connectionMaker() {
+		return new CountingConnectionMaker(realConnectionMaker());
+	}
+	
+	@Bean
+	public ConnectionMaker realConnectionMaker() {
+		return new NConnectionMaker(); 
+	}
+}
+```
+
+UserDAO는 여전히 connectionMaker()로 ConnectionMaker를 주입받고 있지만, connectionMaker()의 내용은 살짝 변경되었다. connectionMaker()는 실제로 사용할 ConnectionMaker의 정보를 CountingConnectionMaker에 주입해서 얻은 객체를 반환해주는 형태로 변경되었다.
+
+### XML을 이용한 설정
+
+@Configuration 으로 만든 설정 클래스는 일정한 패턴이 반복되는 형태다. 스프링은 자바 코드 뿐 아니라 XML등의 다양한 형태로 의존 관계 설정을 해주는 것이 가능하다. (자바 컴파일 시 에러 확인이 가능하여 디버깅에 용이해서 자바 코드에 어노테이션 형태로 설정하는 것이 좋다는 말도 있고, 일일히 컴파일을 해줄 필요가 없으니 XML로 하는게 좋다는 말도 있다...)
+
+|-|자바 코드|XML 태그|
+|-|:------|:--|
+|빈 설정파일|@Configuration|<beans>|
+|빈 이름|@Bean methodName()|<bean id="methodName"|
+|빈 클래스|return new BeanClass();|class="a.b.c...BeanClass">|
+
+connectionMaker 빈을 XML 태그로 변경하면 다음과 같다
+
+```java
+@Bean
+public ConnectionMaker connectionMaker() {
+    return new NConnectionMaker(); 
+}
+```
+
+```xml
+<bean id="connectionMaker" class="tobi.user.dao.NConnectionMaker">
+```
+
+주입 받을 객체가 있는 경우에는 <bean> 태그 사이에 <property> 태그가 추가적으로 들어간다. userDao 빈을 XML 태그로 변경하면 다음과 같다. (여기서는 주입할때 생성자 방식이 아닌 setter 방식 사용)
+
+```java
+@Bean
+public UserDAO userDao() {
+    UserDAO userDao = new UserDAO();
+    userDao.setConnectionMaker(connectionMaker());
+    return userDao;
+}
+```
+
+```xml
+<bean id="userDao" class="tobi.user.dao.UserDAO">
+    <property name="connectionMaker" ref="connectionMaker" />
+</bean>
+```
+
+여기서 name과 ref가 같아서 헷갈릴 수 있는데, <U>name은 사용될 setter명</U>이고, <U>ref는 주입될 빈의 이름</U>이다. 
+
+XML 스키마까지 적용한 전체 XML 내용은 다음과 같다.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+		
+		<bean id="connectionMaker" class="tobi.user.dao.NConnectionMaker" />
+		
+		<bean id="userDao" class="tobi.user.dao.UserDAO">
+			<property name="connectionMaker" ref="connectionMaker" />
+		</bean>
+</beans>
+```
+
+여러 의존 오브젝트를 만들어 놓고 주입하길 원하는걸 골라서 쓰는 경우도 있다.
+
+```xml
+<bean id="localDBConnectionMaker" class="...LocalDBConnectionMaker"/>
+<bean id="testDBConnectionMaker" class="...TestDBConnectionMaker"/>
+<bean id="realDBConnectionMaker" class="...RealDBConnectionMaker"/>
+
+<bean id="userDao" class="tobi.user.dao.UserDAO">
+    <property name="connectionMaker" ref="testDBConnectionMaker" />
+</bean>
+```
+
+이렇게 생성된 설정파일을 사용하기 위해서는 main에서 어플리케이션 컨텍스트 생성 시 다른 방법으로 생성해주면 된다.
+
+```java
+// ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+// =>
+ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+```
