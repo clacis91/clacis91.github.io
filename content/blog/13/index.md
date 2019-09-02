@@ -617,3 +617,62 @@ XML 스키마까지 적용한 전체 XML 내용은 다음과 같다.
 // =>
 ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
 ```
+
+### DataSource
+
+사실 ConnectionMaker 같은걸 직접 만들 필요는 없다. JDBC를 위한 DataSource 라는 인터페이스를 제공해주기 때문이다. 다음과 같이 사용하면 DB Connection을 쉽게 생성할 수 있다.
+
+```java
+@Configuration
+public class DaoFactory {
+	@Bean
+	public UserDAO userDao() {
+		UserDAO userDao = new UserDAO();
+		userDao.setDataSource(dataSource());
+	    return userDao;
+	}
+    
+    ...
+	
+	@Bean
+	public DataSource dataSource() {
+		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+		
+		dataSource.setDriverClass(org.postgresql.Driver.class);
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+		dataSource.setUsername("tobi");
+		dataSource.setPassword("1234");
+		
+		return dataSource;
+	}
+}
+```
+
+```java
+public class UserDAO {
+	private DataSource dataSource;
+	
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
+	public void add(User user) throws SQLException {
+		//Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
+        ...
+```
+
+위 코드를 다음과 같이 XML 형식으로 나타낼 수도 있다.
+
+```xml
+<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource" >
+    <property name="driverClass" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://localhost:5432/postgres" />
+    <property name="username" value="wjnam" />
+    <property name="password" value="1234" />
+</bean>
+
+<bean id="userDao" class="tobi.user.dao.UserDAO">
+    <property name="dataSource" ref="dataSource" /> 
+</bean>
+```
