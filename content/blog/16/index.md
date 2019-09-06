@@ -231,3 +231,267 @@ public class UserDAOJdbc implements UserDAO {
 	};
 }
 ```
+
+### 사용자 수정 기능 추가
+
+DAO에 사용자 정보를 수정하는 메소드 update()를 추가한다. 먼저 update() 메소드를 테스트할 테스트 코드를 먼저 작성한다.
+
+```java
+@Test
+public void update() {
+	dao.deleteAll();
+	dao.add(user1);
+	
+	user1.setName("U1up");
+	user1.setPassword("pass1up");
+	user1.setLevel(Level.GOLD);
+	user1.setLogin(1000);
+	user1.setRecommend(999);
+	dao.update(user1);
+	
+	User user1up = dao.get(user1.getId());
+	checkSameUser(user1up, user1);
+}
+```
+
+테스트 코드가 정상적으로 동작할 수 있도록 DAO에 update() 메소드를 추가한다. (이전에 DAO가 인터페이스 형태로 변경됐기 때문에 DAO 인터페이스와 구현체에 모두 update()를 추가해야한다.)
+
+```java
+public void update(User user) {
+	this.jdbcTemplate.update(
+			"UPDATE USERS SET name=?, password=?, level=?, login=?, recommend=? WHERE id=?",
+			user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId()
+	);
+}
+```
+
+### UserService
+
+사용자 정보를 수정하는 단계까지 됐으니, 이제 사용자 정보를 '어떤 기준으로 업데이트 한다' 라는 비즈니스 로직을 추가해야 한다. 비즈니스 로직은 어디에 두어야할까? DAO에 두는 것은 바람직하지 않다. DAO는 단순히 데이터를 어떻게 넣고빼는지에 관한 클래스이지, 비즈니스 로직이 들어가서는 안된다. 비즈니스 로직을 담기 위한 클래스 UserService를 하나 추가한다.
+
+UserService는 UserDAO를 주입받아 사용하는데, UserDAO의 구현에 영향을 받지 않도록 해야한다. 그리고 UserService를 위한 테스트 클래스도 하나 추가한다.
+
+```java
+public class UserService {
+	UserDAO userDao;
+	
+	public void setUserDao(UserDAO userDao) {
+		this.userDao = userDao;
+	}
+}
+```
+
+```xml
+<bean id="userService" class="tobi.user.dao.UserService">
+	<property name="userDao" ref="userDao" /> 
+</bean>
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/test-applicationContext.xml")
+public class UserServiceTest {
+	@Autowired
+	UserService userService;
+
+	@Test
+	public void bean() {
+		assertThat(this.userService, is(notNullValue()));
+	}
+}
+```
+
+이제 사용자의 레벨을 변경하는 로직을 추가한다. 위에서 설명한 레벨 상승 로직을 구현한다.
+
+```java
+public void upgradeLevels() {
+	List<User> users = userDao.getAll();
+	
+	for(User user : users) {
+		Boolean changed = false;
+		if(user.getLevel() == Level.BASIC && user.getLogin() >= 50) {
+			user.setLevel(Level.SILVER);
+			changed = true;
+		}
+		else if(user.getLevel() == Level.SILVER && user.getRecommend() >= 30) {
+			user.setLevel(Level.GOLD);
+			changed = true;
+		}
+		
+		if(changed)
+			userDao.update(user);
+	}
+}
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/test-applicationContext.xml")
+public class UserServiceTest {
+	List<User> users;
+	
+	@Autowired
+	UserDAO userDao;
+	@Autowired
+	UserService userService;
+
+	@Before
+	public void setUp() {
+		User u1 = new User("U1", "U1Name", "pass1");
+		u1.setLevel(Level.BASIC);
+		u1.setLogin(49);
+		u1.setRecommend(0);
+		User u2 = new User("U2", "U2Name", "pass2");
+		u2.setLevel(Level.BASIC);
+		u2.setLogin(50);
+		u2.setRecommend(0);
+		User u3 = new User("U3", "U3Name", "pass3");
+		u3.setLevel(Level.SILVER);
+		u3.setLogin(60);
+		u3.setRecommend(29);
+		User u4 = new User("U4", "U4Name", "pass4");
+		u4.setLevel(Level.SILVER);
+		u4.setLogin(60);
+		u4.setRecommend(30);
+		User u5 = new User("U5", "U5Name", "pass5");
+		u5.setLevel(Level.GOLD);
+		u5.setLogin(100);
+		u5.setRecommend(100);
+		users = Arrays.asList(u1,u2,u3,u4,u5);
+	}
+	
+	@Test
+	public void upgradeLevels() {
+		userDao.deleteAll();
+		for(User user : users) {
+			userDao.add(user);
+		}
+		
+		userService.upgradeLevels();
+		
+		checkLevel(users.get(0), Level.BASIC);
+		checkLevel(users.get(1), Level.SILVER);
+		checkLevel(users.get(2), Level.SILVER);
+		checkLevel(users.get(3), Level.GOLD);
+		checkLevel(users.get(4), Level.GOLD);
+	}
+	
+	private void checkLevel(User user, Level expectedLevel) {
+		User userUpdate = userDao.get(user.getId());
+		assertThat(userUpdate.getLevel(), is(expectedLevel));
+	}
+}
+```
+
+이제 리팩토링의 시간이다.  
+일단 if 분기들이 맘에 들지 않는다. 플래그 사용도 맘에 안든다. 그 외에도 매직넘버등 자잘한 문제들이 있다.
+
+가장 먼저 추상적인 레벨에서 보면, 자주 변경될 가능성이 있는 구체적인 내용이 추상적인 흐름과 섞여 있다. 먼저 메소드를 추상적인 흐름으로만 표현해보자.
+
+```java
+public void upgradeLevels() {
+	List<User> users = userDao.getAll();
+	
+	for(User user : users) {
+		if(canUpgradeLevel(user)) {
+			upgradeLevel(user)
+		}
+	}
+}
+```
+
+안의 구체적으로 어떻게 구현돼있는지 상관하지 않으면, 논리적인 흐름은 위의 코드와 같다. (1)유저별로 (2)레벨업이 가능하면 (3)레벨업 한다. 이제 논리적인 흐름대로 구체적인 메소드를 구현해보자.
+
+```java
+private boolean canUpgradeLevel(User user) {
+	Level curLevel = user.getLevel();
+	switch(curLevel) {
+		case BASIC : return (user.getLogin() >= 50);
+		case SILVER : return (user.getRecommend() >= 30);
+		case GOLD: return false;
+		default :
+			throw new IllegalArgumentException("Unknown level : " + curLevel);
+	}
+}
+
+private void upgradeLevel(User user) {
+	if(user.getLevel() == Level.BASIC) user.setLevel(Level.SILVER);
+	else if(user.getLevel() == Level.SILVER) user.setLevel(Level.GOLD);
+	userDao.update(user);
+}
+```
+
+이정도로도 충분히 동작은 하지만 upgradeLevel() 메소드는 좀더 개선이 필요해보인다. 우선 예외처리(만약 User가 GOLD 레벨이라면 탈 로직이 없으니 예외임) 부분이 없고, 어차피 각 단계에서 다음 레벨은 정해져 있는데 굳이 Service의 if 문에서 상승될 레벨을 지정해주는 것도 불필요해 보인다. 다음 레벨이 뭔지 알아내는 정도는 Level에서 구현해도 충분하다.
+
+```java
+public enum Level {
+	GOLD(3, null), SILVER(2, GOLD), BASIC(1, SILVER);
+	
+	private final int value;
+	private final Level next;
+	
+	Level(int value, Level next) {
+		this.value = value;
+		this.next = next;
+	}
+	
+	public Level nextLevel() {
+		return this.next;
+	}
+	...
+```
+
+이런식으로 enum 내부에서 각 레벨의 다음 레벨을 미리 지정해놓을 수 있다. 이제 Service에서 '특정 레벨로 올려라'라고 할 필요 없이 '다음 레벨로 올려라'라는 요청만 하면 된다.  
+(책에서는 User 클래스에 upgradeLevel() 메소드를 또 구현했는지 이게 맞는지 모르겠다. User는 VO같은 오브젝트로 사용중인데 거기에 로직을 넣는건 아닌거같다. 일단은 내 생각대로 Service에서 레벨업 해주는 로직 구현)
+
+```java
+private void upgradeLevel(User user) {
+	Level nextLevel = user.getLevel().nextLevel();
+	user.setLevel(nextLevel);
+	userDao.update(user);
+}
+```
+
+변경된 upgradeLevel() 메소드를 따라 테스트 클래스도 수정해야한다. 기존 테스트 클래스에서는 업그레이드된 레벨을 일일히 파라미터로 명시해줘야했지만, nextLevel을 활용하도록 바꿔야한다.
+
+```java
+@Test
+public void upgradeLevels() {
+	userDao.deleteAll();
+	for(User user : users) {
+		userDao.add(user);
+	}
+	
+	userService.upgradeLevels();
+	
+	// Upgrade 대상이면 true, 아니면 false
+	checkLevelUpgraded(users.get(0), false);
+	checkLevelUpgraded(users.get(1), true);
+	checkLevelUpgraded(users.get(2), false);
+	checkLevelUpgraded(users.get(3), true);
+	checkLevelUpgraded(users.get(4), false);
+}
+
+private void checkLevelUpgraded(User user, boolean upgraded) {
+	User userUpdate = userDao.get(user.getId());
+	
+	if(upgraded)
+		assertThat(userUpdate.getLevel(), is(user.getLevel().nextLevel()));
+	else 
+		assertThat(userUpdate.getLevel(), is(user.getLevel()));
+}
+```
+
+매직넘버도 이쯤해서 처리해두자
+
+```java
+public class UserService {
+	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
+	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
+	...
+	switch(curLevel) {
+		case BASIC : return (user.getLogin() >= MIN_LOGCOUNT_FOR_SILVER);
+		case SILVER : return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
+		...
+```
+
