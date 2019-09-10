@@ -409,7 +409,353 @@
 	<span class="token keyword">switch</span><span class="token punctuation">(</span>curLevel<span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		<span class="token keyword">case</span> BASIC <span class="token operator">:</span> <span class="token keyword">return</span> <span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getLogin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">>=</span> MIN_LOGCOUNT_FOR_SILVER<span class="token punctuation">)</span><span class="token punctuation">;</span>
 		<span class="token keyword">case</span> SILVER <span class="token operator">:</span> <span class="token keyword">return</span> <span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getRecommend</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">>=</span> MIN_RECOMMEND_FOR_GOLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div></div><hr style="margin-bottom:1.75rem"/><ul style="display:flex;flex-wrap:wrap;justify-content:space-between;list-style:none;padding:0"><li><a rel="prev" href="/15/">← <!-- -->Spring Study - (3)</a></li><li><a rel="next" href="/17/">Clean-code와 Refactoring<!-- --> →</a></li></ul></main><footer>© <!-- -->2019<!-- -->, Built with<!-- --> <a href="https://www.gatsbyjs.org">Gatsby</a></footer></div></div></div><script>
+		<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div>
+<h2>Transaction Service 추상화</h2>
+<p>100명의 회원이 있는 상태에서, 90명의 레벨 관리가 이루어진 상태에서 서버 장애로 중단되었다. 이런 상황에서 해결법은 어떻게 될까?  </p>
+<p>(1) 기왕 작업한게 아까우니 그냥 그대로 두고 복구된 후 나머지 회원 관리를 처리한다.<br>
+(2) 일부 사용자는 레벨이 조정됐는데 일부는 안됐다면 반발이 심할 수 있다. 모두 되돌리고 나중에 다시 처리한다.</p>
+<p>현재까지 작성한 레벨 관리 코드는 어떻게 동작하고 있을까? 테스트를 만들어서 확인해보자. 하지만 이번 테스트는 중간에 강제로 에러를 발생시켜야 하는 것이기 때문에 작성하기 쉽지 않다. 예외가 던져지는 상황을 의도적으로 만들어야 한다.</p>
+<h3>테스트용 Service</h3>
+<p>예외가 던져지는 상황을 만드는 가장 쉬운 방법은 당연히 어플리케이션 코드를 수정하는 방법이다. 하지만 이미 잘 동작하고 있는 코드에 테스트를 위해서 굳이 예외 상황을 넣는 일은 함부로 해서는 안된다. 그래서 테스트를 위한 Service 클래스를 만든다.
+물론 아예 새로운 클래스를 만드는건 아니고, 상속한 후 오버라이딩해서 쓴다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestUserService</span> <span class="token keyword">extends</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span> 
+	<span class="token keyword">private</span> <span class="token class-name">String</span> id<span class="token punctuation">;</span>
+	
+	<span class="token keyword">private</span> <span class="token class-name">TestUserService</span><span class="token punctuation">(</span><span class="token class-name">String</span> id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> id<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	
+	<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">upgradeLevel</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">if</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">TestUserServiceException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">upgradeLevel</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>특정 id를 가진 User를 관리하는 단계에서 강제로 Exeption을 발생시키도록 구현된 테스트용 Service 코드다. 이 Service를 사용하는 테스트 코드를 작성한다. 기대하는 동작은 작업 중간에 중단되면 기존 작업됐던 내용도 모두 원복되는 것이다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeAllOrNothing</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token class-name">UserService</span> testUserService <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TestUserService</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	testUserService<span class="token punctuation">.</span><span class="token function">setUserDao</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>userDao<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	userDao<span class="token punctuation">.</span><span class="token function">deleteAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> userDao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		testUserService<span class="token punctuation">.</span><span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"TestUserServiceException expected"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">TestUserServiceException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">}</span>
+	
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>..는 fail.<br>
+즉 기대한대로 원복되는 것이 아니라, 중단되더라도 작업된 내용은 저장되고 있는 것이다.</p>
+<p>이는 레벨 관리 기능이 하나의 <b>트랜잭션transaction</b> 안에서 동작하지 않았기 때문이다. 여러번의 SQL 쿼리 수행을 하나의 트랜잭션으로 취급하기위해 JDBC는 트랜잭션 경계 설정이라는 기능을 제공하고 있다. JDBC의 트랜잭션은 기본적으로 <U>하나의 Connection 오브젝트를 가져와 사용하다가 close 하는 사이</U>에 일어난다. JDBC에서 트랜잭션을 시작하려면 자동커밋 옵션을 꺼야한다. 자동커밋 옵션이 꺼지면 commit() 혹은 rollback()이 호출될때 트랜잭션이 종료된다. </p>
+<h3>UserService와 UserDAO의 트랜잭션</h3>
+<p>JDBC의 트랜잭션은 Connection 오브젝트를 사용한다고 했는데, 생각해보면 JdbcTemplate을 사용한 이후로는 이 Connection 오브젝트는 구경도 못해봤다. Connection은 JdbcTemplate 안에서 불러와지고 닫히도록 구현되어있고, 이것을 DAO에서 사용하면 DAO 메소드 호출 하나마다 하나의 트랜잭션이 만들어지는 구조가 될 수 밖에 없다. 결국 DAO를 사용하면 비즈니스 로직을 담고있는 UserService 내에서 진행되는 여러 작업을 하나의 트랜잭션으로 묶는 일이 불가능해진다.</p>
+<h3>비즈니스 로직 내에서의 트랜잭션 경계설정</h3>
+<p>그렇다고 여태까지 성격과 책임이 다른 코드를 분리하고, 느슨하게 연결해서 확장성을 좋게 시도해왔는데 이제와서 트랜잭션 문제를 해결한답시고 다시 섞이게 만드는 일은 일어나면 안된다.  현 상태에서 트랜잭션 경계 설정 작업은 UserSerivce 쪽에서 하는것이 논리적으로 맞다. 대략 이런 순서일 것이다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> DB <span class="token class-name">Connection</span> 생성
+	<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> 트랜잭션 시작
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span> DAO 메소드 호출
+		<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span> 트랜잭션 <span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> 트랜잭션 <span class="token function">rollback</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+		<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> <span class="token class-name">Connection</span> 종료
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>그런데 아까도 말했듯이, DAO 내부에서는 이미 Connection을 갖고 있기 때문에 그냥 Connection을 하나 생성해버리면 <em>아무 상관없는 트랜잭션이 또 하나 생성되는 것</em>이기 때문에 주의해야 한다. 그렇다면 UserService에서 만든 Connection을 DAO에 전달해서 사용하게 만들면 해결되지 않을까? 하는 생각을 하게 될텐데 이것도 안된다.<br>
+이 방식을 사용하면<br>
+(1) 편리하게 사용했던 JdbcTemplate을 사용할 수 없게 되고<br>
+(2) Service부터 DAO까지 가는 모든 단계에서 파라미터를 계속 넘겨줘야하는 더러운 코드가 생겨버리고<br>
+(3) 데이터 엑세스 기술에 독립적일 수가 없는(예를 들어 하이버네이트는 Connection이 아니라 Session이란걸 사용하기 때문에) 문제가 발생한다.</p>
+<h3>트랜잭션 동기화</h3>
+<p>물론. 스프링은 이러한 딜레마를 해결할 수 있는 방법을 제공한다.</p>
+<ul>
+<li>트랜잭션 동기화</li>
+</ul>
+<p>비즈니스 로직에서 트랜잭션의 시작과 끝을 관리하면서도, Connection을 파라미터로 넘겨주는 방식을 사용하지 않기 위해 스프링에서는 <b>트랜잭션 동기화Transaction Synchronization</b> 방식을 제공한다. 비즈니스 로직에서 생성한 Connection 오브젝트를 외부 저장소에 보관해두고, DAO의 메소드에서는 저장된 Connection을 가져다 사용하게 하는 것이다. </p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token class-name">DataSource</span> dataSource<span class="token punctuation">;</span>
+	
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setDataSource</span><span class="token punctuation">(</span><span class="token class-name">DataSource</span> dataSource<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// Connection 생성 기능이 추가돼야 하니 DataSource를 주입받는다</span>
+	<span class="token keyword">this</span><span class="token punctuation">.</span>dataSource <span class="token operator">=</span> dataSource<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+	<span class="token comment">// DB 커넥션과 동기화를 해주는 스프링 메소드 </span>
+	<span class="token class-name">TransactionSynchronizationManager</span><span class="token punctuation">.</span><span class="token function">initSynchronization</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token class-name">Connection</span> c <span class="token operator">=</span> <span class="token class-name">DataSourceUtils</span><span class="token punctuation">.</span><span class="token function">getConnection</span><span class="token punctuation">(</span>dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	c<span class="token punctuation">.</span><span class="token function">setAutoCommit</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token comment">// 동기화를 수행한 이후에는 DAO 작업은 모두 이 트랜잭션 안에서 이뤄진</span>
+	
+	<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> users <span class="token operator">=</span> userDao<span class="token punctuation">.</span><span class="token function">getAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">canUpgradeLevel</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+				<span class="token function">upgradeLevel</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		c<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 문제없이 반복문 완료되면 commit</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		c<span class="token punctuation">.</span><span class="token function">rollback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 반복문 중 문제 생기면 rollback </span>
+		<span class="token keyword">throw</span> e<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+		<span class="token class-name">DataSourceUtils</span><span class="token punctuation">.</span><span class="token function">releaseConnection</span><span class="token punctuation">(</span>c<span class="token punctuation">,</span> dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token class-name">TransactionSynchronizationManager</span><span class="token punctuation">.</span><span class="token function">clearSynchronization</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>스프링이 제공하는 트랜잭션 동기화 관리 클래스는 <b><em>TransactionSynchronizationManager</em></b>이다. 여기에 DataSourceUtils를 통해 DB 커넥션을 생성하여 트랜잭션 동기화를 시작한다. 이 상태로 JdbcTemplate을 사용하면 동기화시킨 DB 커넥션을 사용하게 된다. </p>
+<ul>
+<li>트랜잭션 테스트 보완</li>
+</ul>
+<p>기존에 테스트 코드에는 없던 DataSource 빈을 가져와서 테스트 안의 UserService에 주입시켜줘야한다. </p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeAllOrNothing</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+	<span class="token class-name">UserService</span> testUserService <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TestUserService</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	testUserService<span class="token punctuation">.</span><span class="token function">setUserDao</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>userDao<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	testUserService<span class="token punctuation">.</span><span class="token function">setDataSource</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	userDao<span class="token punctuation">.</span><span class="token function">deleteAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> userDao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		testUserService<span class="token punctuation">.</span><span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"TestUserServiceException expected"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> 
+	<span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">TestUserServiceException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">}</span>
+	
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<h3>트랜잭션 추상화</h3>
+<p>여기까지의 코드는 Service, DAO, JDBC까지 책임과 성격에 따라 데이터 엑세서와 비즈니스 로직까지 잘 분리시킨 좋은 코드지만 아직도 문제가 있다. 여러개의 DB를 사용하는 경우이다. JDBC의 Connection을 이용한 로컬 트랜잭션은 하나의 DB Connection에 종속되기 때문이다. </p>
+<p>때문에 별도의 트랜잭션 관리자를 통해 트랜잭션들을 관리하는 글로벌 트랜잭션이라는 방식이 필요하다. 자바는 글로벌 트랜잭션을 위한 API인 JTA(Java Transaction API)를 제공하고 있다. JTA를 사용한 트랜잭션 처리 코드의 전형적인 구조는 다음과 같다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token class-name">InitialContext</span> ctx <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">InitialContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">UserTransaction</span> tx <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">UserTransaction</span><span class="token punctuation">)</span> ctx<span class="token punctuation">.</span><span class="token function">lookup</span><span class="token punctuation">(</span>USER_TX_JNDI_NAME<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+tx<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Connection</span> c <span class="token operator">=</span> dataSource<span class="token punctuation">.</span><span class="token function">getConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">try</span> <span class="token punctuation">{</span>
+	tx<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	tx<span class="token punctuation">.</span><span class="token function">rollback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">throw</span> e<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+	c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>Connection 대신에 UserTransaction 메소드를 사용하는 것을 제외하고는 별로 달라진건 없다. </p>
+<p>하지만 그렇다고 JDBC와 호환이 되는 것은 아니기 때문에 단일 DB를 위한 트랜잭션과 다중 DB를 위한 트랜잭션 관리 코드가 따로 적용되고, 또 하이버네이트 같은 것들이 추가되면 또 그에 대한 트랜잭션 코드가 추가되고.. 이런식으로 여러 코드를 관리하는 것도 어려우니 트랜잭션 처리에도 추상화를 도입하는 방법이 있다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+	<span class="token class-name">PlatformTransactionManager</span> transactionManager <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DataSourceTransactionManager</span><span class="token punctuation">(</span>dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token class-name">TransactionStatus</span> status <span class="token operator">=</span> transactionManager<span class="token punctuation">.</span><span class="token function">getTransaction</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">DefaultTransactionDefinition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> users <span class="token operator">=</span> userDao<span class="token punctuation">.</span><span class="token function">getAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">canUpgradeLevel</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+				<span class="token function">upgradeLevel</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		transactionManager<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">RuntimeException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		transactionManager<span class="token punctuation">.</span><span class="token function">rollback</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">throw</span> e<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>스프링이 제공하는 트랜잭션 경계설정을 위한 추상 인터페이스는 PlatformTransactionManager다. 예제의 경우 JDBC 로컬 트랜잭션을 위해 DataSourceTransactionManager 라는 구현체를 사용했다. </p>
+<p>트랜잭션 매니저 구현 클래스를 선택하는 부분은 당연히 따로 주입받아서 쓰는 형태로 바뀌어야 한다. 설정 파일에 사용할 TransactionManager 구현체 빈을 등록하고 주입받아 사용하도록 수정한다.<br>
+(만약 JDBC가 아니라 JTA를 사용한다고 하면 “org.springframework.transaction.jta.JtaTransactionManager” 처럼 사용할 클래스를 변경해주면 된다.)</p>
+<div class="gatsby-highlight" data-language="xml"><pre class="language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.jdbc.datasource.DataSourceTransactionManager<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userService<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>tobi.user.dao.UserService<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userDao<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userDao<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span></code></pre></div>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+	<span class="token comment">// DataSource는 필요 없어졌으니 삭제해도 무방</span>
+	<span class="token class-name">PlatformTransactionManager</span> transactionManager<span class="token punctuation">;</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setTransactionManager</span><span class="token punctuation">(</span><span class="token class-name">PlatformTransactionManager</span> transactionManager<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>transactionManager <span class="token operator">=</span> transactionManager<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+		<span class="token class-name">TransactionStatus</span> status <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>transactionManager<span class="token punctuation">.</span><span class="token function">getTransaction</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">DefaultTransactionDefinition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+	<span class="token punctuation">}</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div>
+<hr>
+<h2>서비스 추상화와 단일 책임 원칙</h2>
+<h3>수직, 수평 계층구조와 의존관계</h3>
+<p><U>UserDAO와 UserService</U>는 똑같이 어플리케이션 로직을 담은 코드지만 내용에 따라 분리되어 있다. 같은 계층에서 <U>수평적으로 분리</U>되어 있다고 볼 수 있다.</p>
+<p>트랜잭션의 추상화는 어플리케이션 로직과 그 밑에서 동작하는 <U>로우레벨의 트랜잭션 기술</U>이라는 다른 계층의 코드가 <U>수직적으로 분리</U>되어 있다. </p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;"
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/da2bbc2b3808ba7abbb80e0b0f87051c/fea0e/image-1.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 40.22222222222222%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAABA0lEQVQoz12Shw7DMAhE/f8fGWXvvTfVo3LUJhI6Gw44cMx1XbKuq+z7LsdxKC7LIud5Ch/Ifds2jYPwbfz9mWmaNKEsS/E8T/I814Su6xSzLNMmTdOI67rS970WBeEGQaCcoihkGIZvwbZtpa5rDVZVpXeCFAQphvm+rzziNKToOI5qcJnWWDUkpGn6JMzzrCOSxARw4jh+GlGEM4KIMSE+AxnJdGdkx3EkDEMlEWMsiPiIweVup+AMFyEUNyhBBWYVYHYcOzL3KIqeGEgu+2WnoD4KTvaGwiRJNIkzxUH2ijqQR8GHEorSiFy7Looa+1uwF4zz2379CLC/GY9w3/effQAJdWT9wQF8DQAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="image 1"
+        title="image 1"
+        src="/static/da2bbc2b3808ba7abbb80e0b0f87051c/b9e4f/image-1.png"
+        srcset="/static/da2bbc2b3808ba7abbb80e0b0f87051c/cf440/image-1.png 148w,
+/static/da2bbc2b3808ba7abbb80e0b0f87051c/d2d38/image-1.png 295w,
+/static/da2bbc2b3808ba7abbb80e0b0f87051c/b9e4f/image-1.png 590w,
+/static/da2bbc2b3808ba7abbb80e0b0f87051c/f9b6a/image-1.png 885w,
+/static/da2bbc2b3808ba7abbb80e0b0f87051c/fea0e/image-1.png 900w"
+        sizes="(max-width: 590px) 100vw, 590px"
+      />
+  </a>
+    </span></p>
+<h3>단일 책임 원칙</h3>
+<p>이런 적절한 분리가 가져오는 특징은 객체지향의 원칙 중 하나인 <b>단일 책임 원칙</b><em>Single Responsibility Principle</em>으로 설명할 수 있다. 하나의 모듈은 하나의 책임을 가져야 한다는(모듈이 수정되는 이유는 하나 뿐이라는) 의미다.</p>
+<p>UserService에 JDBC Connection 메소드를 직접 사용하는 트랜잭션 코드가 들어가 있을때를 생각해보면 UserService는 두가지 책임을 가지고 있다. <em>사용자 레벨을 어떻게 관리할 것인가</em>와 <em>어떻게 트랜잭션을 관리할 것인가</em>라는 두 가지 책임을 갖고 있다. 이것은 UserService는 <U>단일 책임 원칙을 지키지 못하고 있다</U>는 뜻이다. </p>
+<p>하지만 DI를 통해서 트랜잭션 오브젝트를 외부 설정을 통하게 하면서 UserService는 이제 레벨 관리와 관련된 책임만 가지게 됐다.</p>
+<h2>메일 서비스 추상화</h2>
+<p>사용자 레벨 관리와 관련된 추가 요청 사항이 들어왔다. 레벨업 시에 안내 메일을 발송하는 기능을 추가해야 한다. 할일은 크게 두가지가 된다. 하나는 User 정보에 이메일 정보를 추가하는 것이고, upgradeLevel 메소드에 메일 발송 기능을 추가하는 것이다. </p>
+<h3>JavaMail</h3>
+<p>(User 정보에 이메일을 추가하는건 이제 알아서 하라고 한다..)<br>
+Java에서 메일을 발송할 때는 표준 기술인 JavaMail을 사용하면 된다. 레벨업 작업을 수행하는 메소드에 메일 전송을 기능을 추가한다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">upgradeLevel</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token class-name">Level</span> nextLevel <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">nextLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	user<span class="token punctuation">.</span><span class="token function">setLevel</span><span class="token punctuation">(</span>nextLevel<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	userDao<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">sendUpgradeEmail</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">sendUpgradeEmail</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token class-name">Properties</span> props <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Properties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	props<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"mail.smtp.host"</span><span class="token punctuation">,</span> <span class="token string">"mail.ksug.org"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token class-name">Session</span> s <span class="token operator">=</span> <span class="token class-name">Session</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token class-name">MimeMessage</span> message <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MimeMessage</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">try</span> <span class="token punctuation">{</span>
+		message<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">InternetAddress</span><span class="token punctuation">(</span><span class="token string">"useradmin@ksug.org"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		message<span class="token punctuation">.</span><span class="token function">addRecipient</span><span class="token punctuation">(</span><span class="token class-name">Message</span><span class="token punctuation">.</span><span class="token class-name">RecipientType</span><span class="token punctuation">.</span>TO<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">InternetAddress</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		message<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Upgrade 안내"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		message<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span><span class="token string">"사용자 등급이 "</span> <span class="token operator">+</span> user<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"로 업그레이드 되었습니다."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		
+		<span class="token class-name">Transport</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">AddressException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">MessagingException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token class-name">UnsupportedEncodingException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>메일 전송 기능이 완성되었지만 결정적으로 메일을 보내줄 메일 서버가 준비되어 있지가 않다.. 테스트를 하려고 해도 메일 서버가 없으니 테스트가 실패할 것이다. 만약 실제 운영 중인 메일 서버를 테스트를 위해 이용한다해도, 테스트마다 메일 서버를 사용하는 것은 상당한 부담이 될 수도 있다. 때문에 메일 서버도 테스트 DB를 둔 것처럼 테스트 서버를 거치도록 설정해주면 된다. </p>
+<p>다만 실제로 메일을 보낸다기 보다는 SMTP는 믿을만한 프로토콜이기 때문에 SMTP에 정상적으로 요청이 갔는지 정도만 체크해도 무방하다. 비슷한 논리로, JavaMail도 표준 기술로 믿을만하기 때문에 굳이 실제 JavaMail을 구동시키기 보다는 JavaMail과 같은 인터페이스를 갖는 오브젝트를 만들어서 테스트해도 무방하다. </p>
+<p>하지만 JavaMail API는 인터페이스로 만들어진 부분이 없어 구현체를 바꿀수 있는 것도 아니고, 내부에서 사용하는 Session 오브젝트도 인터페이스나 상속으로 확장시킬 수 있는 형태로 되어있지 않다. 이러한 문제 때문에 스프링은 MailSender라고 하는 인터페이스를 통해 JavaMail에 대한 추상화 기능을 제공하고 있다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">sendUpgradeEmail</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token class-name">JavaMailSenderImpl</span> mailSender <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JavaMailSenderImpl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	mailSender<span class="token punctuation">.</span><span class="token function">setHost</span><span class="token punctuation">(</span><span class="token string">"mail.server.com"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token class-name">SimpleMailMessage</span> mailMessage <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SimpleMailMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	mailMessage<span class="token punctuation">.</span><span class="token function">setTo</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	mailMessage<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token string">"mail.ksug.org"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	mailMessage<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Upgrade 안내"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	mailMessage<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span><span class="token string">"사용자 등급이 "</span> <span class="token operator">+</span> user<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"로 업그레이드 되었습니다."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	mailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mailMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>JavaMailSenderImpl은 내부적으로 JavaMail API를 사용해서 메일을 전송해준다. 하지만 아직은 mailSender를 내부에서 생성하고 있기 때문에 메일 테스트용으로는 이 메소드를 사용할 수 없다. 빈으로 등록해서 DI 해주는 형태로 바꿔주자. </p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+	<span class="token class-name">MailSender</span> mailSender<span class="token punctuation">;</span>
+		
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setMailSender</span><span class="token punctuation">(</span><span class="token class-name">MailSender</span> mailSender<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>mailSender <span class="token operator">=</span> mailSender<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	
+	<span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">sendUpgradeEmail</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>mailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mailMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div>
+<div class="gatsby-highlight" data-language="xml"><pre class="language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userService<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>tobi.user.dao.UserService<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userDao<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>userDao<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mailSender<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mailSender<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mailSender<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.mail.javamail.JavaMailSenderImpl<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>host<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mail.server.com<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span></code></pre></div>
+<h3>테스트용 메일 발송 오브젝트</h3>
+<p>스프링에서 제공하는 메일 발송 인터페이스(MainSender)가 있으니 테스트용 메일 발송 클래스는 이것을 구현하면 된다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DummyMailSender</span> <span class="token keyword">implements</span> <span class="token class-name">MailSender</span> <span class="token punctuation">{</span>
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">send</span><span class="token punctuation">(</span><span class="token class-name">SimpleMailMessage</span> simpleMessage<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">MailException</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">}</span>
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">send</span><span class="token punctuation">(</span><span class="token class-name">SimpleMailMessage</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> simpleMessages<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">MailException</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<div class="gatsby-highlight" data-language="xml"><pre class="language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mailSender<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>tobi.user.dao.DummyMailSender<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span></code></pre></div>
+<p>자세한 구현은 존재하지 않지만 MailSender를 인터페이스로 하는 DummyMailSender를 빈으로 등록한다. UserService 코드 자체에서 MailSender와 관련된 부분을 완전히 분리했기 때문에 설정만 바꿔주고 UserService 코드는 바꾸지 않아도 문제없다. </p>
+<p>JavaMailSenderImpl이나 DummyMailSender나 동일하게 MailSender를 인터페이스로 하기 때문에 DummyMailSender에 구현 내용이 없더라도 제대로 호출되는것을 확인하기만 해도 JavaMail 발송이 제대로 이뤄진다는 것을 보장할 수 있다고 한다. (MailSender가 별도의 리턴을 요구하지 않기 때문에 가능, 인터페이스가 별도의 리턴을 요구한다면 그에 맞는 구현을 넣어줘야함)</p>
+<p>그래도 단위 테스트를 만드는 입장에서 생각해보면 어떤 인풋이 있을 때 원하는 아웃풋도 함께 있어야 작성한 테스트 케이스가 성공적으로 수행된다는 것을 확실하게 보장할 수 있다. 단순히 생각해봐도 위 더미 클래스 사용시 Assertion으로 아웃풋을 검증할 수가 없다. 때문에 아예 비어있는 클래스를 사용하기보다는 테스트 결과를 확인할 수 있도록 값을 반환해주는 클래스를 만들어서 사용한다. (이렇게 생성된 오브젝트를 <em>목Mock 오브젝트</em>라고 한다.)</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MockMailSender</span> <span class="token keyword">implements</span> <span class="token class-name">MailSender</span> <span class="token punctuation">{</span>
+	<span class="token keyword">private</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> requests <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> requests<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">send</span><span class="token punctuation">(</span><span class="token class-name">SimpleMailMessage</span> simpleMessage<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">MailException</span> <span class="token punctuation">{</span>
+		requests<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>simpleMessage<span class="token punctuation">.</span><span class="token function">getTo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>MockMailSender는 JavaMail 전송 요청이 발생하면 목적지 이메일 주소를 반환해주는 기능을 수행하도록 구현된 클래스다. 이 클래스로 생성된 목 오브젝트로 테스트의 반환값까지 확인하여 메일 발송 여부를 검증할 수 있게된다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token annotation punctuation">@DirtiesContext</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">{</span>
+	userDao<span class="token punctuation">.</span><span class="token function">deleteAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token class-name">User</span> user <span class="token operator">:</span> users<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		userDao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	
+	<span class="token class-name">MockMailSender</span> mockMailSender <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MockMailSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	userService<span class="token punctuation">.</span><span class="token function">setMailSender</span><span class="token punctuation">(</span>mockMailSender<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	userService<span class="token punctuation">.</span><span class="token function">upgradeLevels</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token function">checkLevel</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">Level</span><span class="token punctuation">.</span>BASIC<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevel</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">Level</span><span class="token punctuation">.</span>SILVER<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevel</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">Level</span><span class="token punctuation">.</span>SILVER<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevel</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">Level</span><span class="token punctuation">.</span>GOLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevel</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">Level</span><span class="token punctuation">.</span>GOLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">checkLevelUpgraded</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> request <span class="token operator">=</span> mockMailSender<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token comment">// 레벨업 대상이 2명이라 메일 전송도 2번 예상됨</span>
+	<span class="token function">assertThat</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">is</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+	<span class="token function">assertThat</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">is</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">assertThat</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">is</span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div></div><hr style="margin-bottom:1.75rem"/><ul style="display:flex;flex-wrap:wrap;justify-content:space-between;list-style:none;padding:0"><li><a rel="prev" href="/15/">← <!-- -->Spring Study - (3)</a></li><li><a rel="next" href="/17/">Clean-code와 Refactoring<!-- --> →</a></li></ul></main><footer>© <!-- -->2019<!-- -->, Built with<!-- --> <a href="https://www.gatsbyjs.org">Gatsby</a></footer></div></div></div><script>
   
   
   if(true) {
