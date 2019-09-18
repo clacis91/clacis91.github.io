@@ -179,7 +179,7 @@ public void upgradeLevels() throws Exception {
 	MockMailSender mockMailSender = new MockMailSender();
 	userServiceImpl.setMailSender(mockMailSender);
 	
-	userService.upgradeLevels();
+	userServiceImpl.upgradeLevels();
 	...
 }
 
@@ -214,4 +214,107 @@ public void upgradeAllOrNothing() throws Exception {
 이제 비즈니스 로직과 트랜잭션 처리가 완전히 분리되어 UserService 구현체에만 신경쓰면 되는 구조가 되어, 트랜잭션 같은 복잡한 기술을 잘 모르는 사람도 비즈니스 로직만 잘 이해한다면 UserService를 사용하는 것이 가능해졌다.
 
 ---
+
+### 고립된 단위 테스트
+
+가장 좋은 테스트 방법은 <U>가능한 작은 단위로 쪼개서 테스트</U>하는 것이다. 테스트 단위를 최대한 잘게 쪼개야 어느 부분에서 에러가 발생했는지 쉽게 파악할 수 있다. 하지만 테스트 대상이 다른 오브젝트에 의존하고 있는 구조가 많아, 테스트 단위를 작게 나누는 것이 쉽지만은 않다.
+
+UserService의 예제를 생각해봐도 사실 UserServic는 JDBC를 이용한 UserDAO, MailSender 등에 의존하고 있다. 우리의 코드만 테스트하는 것처럼 보이지만 사실 그 뒤의 더 많은 오브젝트, 서버, DB, 네트워크와 함께 테스트하고 있는 것이다. DB서버가 다운되거나, 누군가 UserDAO를 건드려서 UserService의 테스트가 실패하게 될 수도 있다. 
+
+그래서 테스트 대상이 주변에 영향 받지 않도록 고립시켜야 한다. 그 방법은 MailSender 에서도 사용했던 테스트용 Mock 오브젝트를 사용하는 것이다.
+
+* UserServiceImpl의 고립된 단위 테스트 만들기
+
+UserService에서는 User 목록 조회와 업데이트를 위해 UserDAO 객체를 주입받아 사용한다. UserServiceTest가 UserDAO에 영향받지 않게 하기 위해 테스트를 위한 UserDAO의 Mock 객체가 필요하다.
+
+```java
+public class MockUserDAO implements UserDAO {
+	private List<User> user;
+	private List<User> updated = new ArrayList();
+	
+	public MockUserDAO(List<User> user) {
+		this.user = user;
+	}
+	
+	public List<User> getUpdated() {
+		return this.updated;
+	}
+	
+	@Override
+	public List<User> getAll() {
+		return this.user;
+	}
+
+	@Override
+	public void update(User user) {
+		updated.add(user);
+	}
+	...
+```
+
+```java
+@Test
+@DirtiesContext
+public void upgradeLevels() throws Exception {
+	UserServiceImpl userServiceImpl = new UserServiceImpl();
+	
+	MockUserDAO mockUserDao = new MockUserDAO(this.users);
+	userServiceImpl.setUserDao(mockUserDao);
+	
+	MockMailSender mockMailSender = new MockMailSender();
+	userServiceImpl.setMailSender(mockMailSender);
+	
+	userServiceImpl.upgradeLevels();
+	
+	List<User> updated = mockUserDao.getUpdated();
+	assertThat(updated.size(), is(2));
+	checkUserAndLevel(updated.get(0), "U2", Level.SILVER);
+	checkUserAndLevel(updated.get(1), "U4", Level.GOLD);
+	
+	List<String> request = mockMailSender.getRequest();
+	assertThat(request.size(), is(2)); // 레벨업 대상이 2명이라 메일 전송도 2번 예상됨
+	assertThat(request.get(0), is(users.get(1).getEmail()));
+	assertThat(request.get(1), is(users.get(3).getEmail()));
+}
+```
+
+원래 UserDAO는 DB에서의 CRUD를 처리하지만 UserService의 레벨업 처리를 테스트만 할 것이라면 사실 DB까지 필요하지 않다. 대강 업데이트를 체크할 수 있는 List를 갖는 Mock 객체로 테스트 내의 UserDAO를 대체해도 무방하다.
+
+### 단위 테스트와 통합 테스트
+
+>단위 테스트 : Mock 오브젝트를 통해 독립적으로 수행되는 테스트  
+>통합 테스트 : DB나 외부 서버 등의 리소스가 필요한 테스트
+
+* 항상 단위 테스트가 가능한지 우선적으로 고려
+
+* 단위 테스트를 만들기 어려운 코드(DAO가 대표적)는 통합 테스트로. 대신 이런 경우에는 테스트를 위한 DB 데이터를 별도로 준비해두는게 좋다
+
+* DAO는 통합 테스트로 만들더라도, DAO를 사용하는 코드는 Mock 오브젝트를 활용해 단위 테스트로 만들 수 있다
+
+* 의존 관계가 복잡하게 연결돼있다면 통합 테스트도 반드시 필요하다
+
+### Mock 프레임워크
+
+Mock 오브젝트 생성을 도와주는 프레임워크. <b>Mockito</b> 라는 프레임워크가 인기가 많다. 간단한 메소드 호출만으로 <U>특정 인터페이스를 구현한 테스트용 오브젝트</U>를 만들 수 있다.
+
+Mockito 오브젝트는 다음 네 단계를 거쳐서 사용한다.
+
+* 인터페이스를 이용해 목 오브젝트를 만든다
+
+* 리턴할 값이 있으면 이를 지정해준다
+
+* 테스트 대상 오브젝트에 DI해서 목 오브젝트가 테스트 중에 사용되도록 만든다
+
+* 목 오브젝트의 특정 메소드가 호출됐는지, 어떤 값을 가지고 몇 번 호출 됐는지 검증한다.
+
+```java
+// Mock 오브젝트 생성
+UserDAO mockUserDao = mock(UserDAO.class);
+// Mock 기능 추가 - 특정 메소드가 불릴 때 리턴해줄 대상을 결정
+when(mockUserDao.getAll()).thenReturn(this.users);
+// Mock 검증
+verify(mockUserDao, times(2)).update(any(User.class));
+```
+
+> 뭐 이런것도 있다고 알아두고 넘어간다
 
