@@ -318,3 +318,304 @@ verify(mockUserDao, times(2)).update(any(User.class));
 
 > 뭐 이런것도 있다고 알아두고 넘어간다
 
+### 프록시 패턴 & 다이내믹 프록시
+
+[프록시 패턴](../12)은 클라이언트가 타깃에 접근하는 방식을 변경해준다. 타깃 오브젝트가 당장 필요하지 않은 경우는 생성되지 않은 상태일 수 있는데, 클라이언트는 이때도 타깃에 대한 레퍼런스가 필요할 수는 있다. 이 경우 실제 타깃 오브젝트 대신 프록시를 넘겨주는 식으로 프록시 패턴이 사용된다. 혹은 접근권한 관리 같은 부가 기능을 수행할 수도 있다.  
+프록시는 다음의 두 가지 기능으로 구성된다.
+
+* 타깃과 같은 메소드를 구현하고 있다가 메소드가 호출되면 타깃 오브젝트로 위임한다
+* 지정된 요청에 대해서는 부가기능을 수해한다.
+
+트랜잭션 부가기능을 위해 만든 UserServiceTx가 바로 프록시다. 
+
+```java
+public class UserServiceTx implements UserService {
+	...
+
+	public void add(User user) {
+		// 호출은 먼저 UserServiceTx(프록시)에서 받고
+		userService.add(user); // 타깃 오브젝트인 userService로 위임
+	}
+
+	public void upgradeLevels() {
+		// 프록시에서 부가기능(Transaction 관련) 수행 후
+		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+		try {
+			userService.upgradeLevels(); // 타깃 오브젝트로 위임
+			
+			this.transactionManager.commit(status);
+		} catch (RuntimeException e) {
+			this.transactionManager.rollback(status);
+			throw e;
+		}
+	}
+```
+
+하지만 사실 일일이 프록시를 만들기는 번거롭다. *add()* 같은 경우에는 별 부가기능이 없더라도 따로 메소드를 새로 만들어서 위임시켜줘야하고, 부가기능 구현시 중복코드 발생이 가능성이 높아진다. *add()* 메소드도 트랜잭션이 필요한 상황이 온다면? *upgradeLevels()*에 있는 트랜잭션 처리 코드가 중복해서 나타나게 될 것이다.
+
+JDK의 다이내믹 프록시는 [리플렉션](../java-study-1) 기능을 이용해서 프록시를 만들어준다.
+
+* Transaction InvocationHandler
+
+```java
+public class TransactionHandler implements InvocationHandler {
+	
+	private Object target; // 부가기능을 제공할 타깃 오브젝트
+	private PlatformTransactionManager transactionManager;
+	private String pattern; // 트랜잭션을 적용할 메소드 이름 패턴
+
+	public void setTarget(Object target) {
+		this.target = target;
+	}
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+	
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+	
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		if(method.getName().startsWith(pattern)) {
+			return invokeInTransaction(method, args);
+		}
+		else {
+			return method.invoke(target, args);
+		}
+	}
+	
+	private Object invokeInTransaction(Method method, Object[] args) throws Throwable {
+		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+		try {
+			Object ret = method.invoke(target, args);
+			this.transactionManager.commit(status);
+			return ret;
+		} catch (InvocationTargetException e) {
+			this.transactionManager.rollback(status);
+			throw e.getTargetException();
+		}
+	}
+}
+```
+
+메소드의 형태는 UserServiceTx에서 트랜잭션을 처리할때와 동일하지만, 수행될 타깃 메소드를 주입받아서 사용하도록 되어있다. 주입된 메소드 이름이 특정 패턴을 만족한다면 트랜잭션 처리를 위해 위임하고, 아니면 그대로 수행한다.
+
+```java
+@Test
+public void upgradeAllOrNothing() throws Exception {
+	...
+
+	TransactionHandler txHandler = new TransactionHandler();
+	txHandler.setTarget(testUserService);
+	txHandler.setTransactionManager(transactionManager);
+	txHandler.setPattern("upgradeLevels");
+	
+	//UserServiceTx txUserService = new UserServiceTx();
+	//txUserService.setTransactionManager(this.transactionManager);
+	//txUserService.setUserService(testUserService);
+	
+	//UserServiceTx 대신 트랜잭션용 프록시로 대체
+	UserService txUserService = (UserService) Proxy.newProxyInstance(
+			getClass().getClassLoader(), 
+			new Class[] { UserService.class },  
+			txHandler);
+	...
+```
+
+클라이언트에서 사용할 때는 기존에 서비스별로 따로 만들었던 트랜잭션 구현체 대신 프록시로 대체한다.
+
+### 다이내믹 프록시를 위한 팩토리 빈
+
+TransactionHandler가 제대로 동작하는 것을 확인했으니, 이제 빈으로 등록해서 DI를 통해 사용할 수 있도록 만들어야 한다. 하지만 TransactionHandler는 일반적인 빈처럼 설정파일로 등록할 수가 없다. 설정으로 프로퍼티가 지정되어야 하는데, 타깃 오브젝트는 런타임에 타입이 정해지기 때문에 미리 설정해두는 것이 불가능하다. 
+
+스프링에서는 빈을 생성할 수 있는 방법이 여러가지 존재하는데, 그 중 하나가 **팩토리 빈**을 통해 생성하는 것이다. 팩토리 빈은 <U>빈을 등록해주는 빈</U>이라고 생각하면 된다. 
+
+스프링 빈에는 팩토리 빈과 UserServiceImpl만 빈으로 등록된다. 팩토리 빈은 UserServiceImpl에 대한 레퍼런스를 프로퍼티를 통해 DI 받아둬야 한다. TransactionHandler에게 타깃 오브젝트를 전달해줘야 하기 때문이다. 그 외에도 다이내믹 프록시나 TransactionHandler를 구성하기 위한 정보는 미리 팩토리 빈의 프로퍼티로 등록해둬야 한다.
+
+```java
+public class TxProxyFactoryBean implements FactoryBean<Object> {
+	Object target;
+	PlatformTransactionManager transactionManager;
+	String pattern;
+	Class<?> serviceInterface;
+
+	public void setTarget(Object target) {
+		this.target = target;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+
+	public void setServiceInterface(Class<?> serviceInterface) {
+		this.serviceInterface = serviceInterface;
+	}
+	
+	@Override
+	public Object getObject() throws Exception {
+		TransactionHandler txHandler = new TransactionHandler();
+		txHandler.setTarget(target);
+		txHandler.setTransactionManager(transactionManager);
+		txHandler.setPattern(pattern);
+		return Proxy.newProxyInstance(
+				getClass().getClassLoader(), 
+				new Class[] {serviceInterface},
+				txHandler
+		);
+	}
+
+	@Override
+	public Class<?> getObjectType() {
+		return serviceInterface;
+	}
+	
+	public boolean isSingleton() {
+		return false; // 싱글톤 빈이 아니라 getObject()가 매번 같은 오브젝트를 리턴하지 않는다는 의미
+	}
+}
+```
+
+이제 빈 설정에 UserServiceTx 대신 팩토리 빈을 등록해줘야 한다.
+
+```xml
+<bean id="userService" class="tobi.user.service.TxProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="userServiceImpl" />
+	<property name="pattern" value="upgradeLevels" />
+	<property name="serviceInterface" value="tobi.user.service.UserService" />
+</bean>
+```
+(upgradeLevels, UserService는 다른 빈을 가리키는게 아니라 String 값이나 Class 타입이기 때문에 value로 넣어준다)
+
+```java
+@Test
+@DirtiesContext
+public void upgradeAllOrNothing() throws Exception {
+	TestUserService testUserService = new TestUserService(users.get(3).getId());
+	testUserService.setUserDao(this.userDao);
+	testUserService.setMailSender(this.mailSender);
+	
+	TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
+	txProxyFactoryBean.setTarget(testUserService);
+	UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
+	...
+```
+*context.getBean("&userService", TxProxyFactoryBean.class)* 에서 **&userService**의 ```&```는 userService 빈이 아니라 userService의 팩토리 빈을 나타낸다.
+
+### 프록시 팩토리 빈의 재사용
+
+프록시 팩토리 빈은 코드 수정 없이 프로퍼티 설정으로 빈을 등록해주기만 하면 다양한 클래스에 적용이 가능하다. 
+
+```xml
+<bean id="coreService" class="tobi.user.service.TxProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="coreServiceTarget" />
+	<property name="pattern" value="" />
+	<property name="serviceInterface" value="xxx.coreService" />
+</bean>
+```
+
+위와 같이 target과 serviceInterface만 주입해주면 coreService라는 아이디를 가진 빈을 DI 받아 사용하는 클라이언트는 별도의 구현없이 트랜잭션 기능이 적용된 CoreService를 이용할 수 있게된다.
+
+하지만 동시에 프록시 팩토리 빈의 한계도 보인다. 프록시를 통해 타깃에 부가기능을 제공하는 것은 클래스가 아닌 메소드 단위로 일어나기 때문에 동시에 여러 클래스에 공통적인 기능을 적용시키는 것이 불가능하고, 반대로 하나의 클래스에 여러 부가기능을 부여하는 것도 불가능하다. 따라서 *클래스하나, 부가기능 하나마다 XML 설정을 새로 만들어줘야해서*, 역으로 설정 파일 관리가 어려워진다는 새로운 문제가 생겼다.
+
+## 스프링의 프록시 팩토리 빈
+
+### Advice & Pointcut
+
+스프링의 ProxyFactoryBean은 프록시를 생성해서 빈 오브젝트로 등록하게 해주는 팩토리 빈이다. 부가기능은 ```MethodInterceptor``` 인터페이스를 구현해서 만든다. 스프링은 메소드 실행을 가로채는 방식 이외에도 부가기능을 추가하는 방법을 제공하고 있다. *MethodInterceptor* 처럼 타깃 오브젝트에 적용하는 부가기능을 담은 오브젝트를 스프링에서는 ```어드바이스Advice```라고 부른다. 
+
+> Advice는 타깃 오브젝트에 종속되지 않는 순수한 부가기능을 담은 오브젝트다
+
+JDK에서 부가기능 적용 대상 메소드를 선정하는 것은 pattern이라는 메소드 이름 비교용 스트링을 DI 받아 판단했다. 스프링에서는 이것을 담당하는 오브젝트도 빈으로 등록되어 사용이 가능하다. 이 오브젝트를 포인트 컷이라고 한다.
+
+> Pointcut은 부가기능이 적용될 메소드 선정 알고리즘을 담은 오브젝트다
+
+포인트컷이 필요 없을 때는 addAdvice()로 어드바이스만 호출하면 됐지만, 포인트컷을 함께 등록할 때는 어드바이스와 포인트컷을 Advisor 타입으로 묶어서 addAdvisor()를 호출해야한다.
+
+> Advisor = Poincut + Advice
+
+### ProxyFactoryBean 적용
+
+*TxProxyFactoryBean*을 스프링이 제공하는 *ProxyFactoryBean*을 이용해서 수정해보자
+
+* TransactionAdvice
+
+```java
+public class TransactionAdvice implements MethodInterceptor {
+	PlatformTransactionManager transactionManager;
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	@Override
+	public Object invoke(MethodInvocation invocation) throws Throwable {
+		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+		
+		try {
+			// Callback 호출로 타깃의 메소드 실행 
+			Object ret = invocation.proceed();
+			this.transactionManager.commit(status);
+			return ret;
+		} catch (RuntimeException e) {
+			this.transactionManager.rollback(status);
+			throw e;
+		}
+	}
+}
+```
+
+* XML 설정
+
+설정파일에서 property 설정으로 간단하게 포인트컷이나 어드바이스를 재사용하는 것이 가능
+
+```xml
+<bean id="transactionAdvice" class="tobi.user.service.TransactionAdvice">
+	<property name="transactionManager" ref="transactionManager" />
+</bean>
+
+<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+	<property name="mappedName" value="upgrade*"/>
+</bean>
+
+<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+	<property name="advice" ref="transactionAdvice" />
+	<property name="pointcut" ref="transactionPointcut" />
+</bean>
+
+
+<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<property name="target" ref="userServiceImpl" />
+	<property name="interceptorNames">
+		<list>
+			<value>transactionAdvisor</value>
+		</list>
+	</property>
+</bean>
+```
+
+* 테스트 코드
+
+트랜잭션이 적용됐는지를 테스트하는 부분이 중요
+
+```java
+@Test
+@DirtiesContext
+public void upgradeAllOrNothing() throws Exception {
+	...
+	//TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class); ==>
+	ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+	txProxyFactoryBean.setTarget(testUserService);
+	UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+	...
+}
+```
+
