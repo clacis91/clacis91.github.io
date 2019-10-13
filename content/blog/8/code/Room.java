@@ -20,6 +20,8 @@ public class Room {
         this.map = map;
         this.summoners = summoners;
 
+        System.out.println("맵 : " + map.getName());
+
         divideTeam();
 
         banList = new ArrayList<>();

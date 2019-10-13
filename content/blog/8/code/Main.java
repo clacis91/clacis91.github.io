@@ -18,7 +18,8 @@ public class Main {
         entry.add(ai2);
         entry.add(ai3);
 
-        Room room = new Room(null, entry);
+        LolMap lolmap = new LolMapGenerator().generate(2);
+        Room room = new Room(lolmap, entry);
         room.progressBan();
         room.progressPick();
         room.printBanPickResult();
